@@ -1,0 +1,18 @@
+[submodule "bundle/awesome-cyclefocus"]
+	path = bundle/awesome-cyclefocus
+	url = https://github.com/blueyed/awesome-cyclefocus
+[submodule "bundle/awesome-pomodoro"]
+	path = bundle/awesome-pomodoro
+	url = https://github.com/nikolavp/awesome-pomodoro.git
+[submodule "bundle/hints"]
+	path = bundle/hints
+	url = https://github.com/XLegion/hints.git
+[submodule "bundle/awesome-newtag"]
+	path = bundle/awesome-newtag
+	url = https://github.com/seniorivn/awesome-newtag.git
+[submodule "bundle/awesome-copycats"]
+	path = bundle/awesome-copycats
+	url = https://github.com/copycat-killer/awesome-copycats.git
+[submodule "bundle/awesome-revelation"]
+	path = bundle/awesome-revelation
+	url = https://github.com/guotsuan/awesome-revelation.git
