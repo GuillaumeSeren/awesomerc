@@ -1,3 +1,6 @@
 [submodule "bundle/awesome-cyclefocus"]
 	path = bundle/awesome-cyclefocus
 	url = https://github.com/blueyed/awesome-cyclefocus
+[submodule "bundle/awesome-pomodoro"]
+	path = bundle/awesome-pomodoro
+	url = https://github.com/nikolavp/awesome-pomodoro.git
