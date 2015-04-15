@@ -25,5 +25,4 @@ layouts =
     awful.layout.suit.max,                  -- 10
     awful.layout.suit.max.fullscreen,       -- 11
     awful.layout.suit.magnifier,            -- 12
-    layouts.tilegaps                        -- 13
 }

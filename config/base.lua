@@ -10,9 +10,9 @@
 
 -- Variable Definitions {{{1
 -- Useful Paths
-walldir = home .. "/wallpaper"
-themes = confdir .. "/themes"
-active_theme = themes .. "/multicolor"
+WALLPAPER_FOLDER = HOME_FOLDER .. "/wallpaper"
+BUNDLE_FOLDER    = AWESOME_FOLDER .. "/bundle"
+ACTIVE_THEME     = BUNDLE_FOLDER .. "/awesome-copycats/themes/multicolor"
 
 -- Localization {{{1
 os.setlocale(os.getenv("LANG"))

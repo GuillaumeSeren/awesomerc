@@ -17,13 +17,10 @@ wibox           = require("wibox")
 beautiful       = require("beautiful")
 naughty         = require("naughty")
 vicious         = require("vicious")
-scratch         = require("scratch")
-layouts         = require("layouts")
-keydoc          = require("keydoc")
 
 -- Bootstrap syslib {{{1
 -- Load beautiful on selected theme
-beautiful.init(active_theme .. "/theme.lua")
+beautiful.init( ACTIVE_THEME .. "/theme.lua")
 -- Themes define colours, icons, and wallpapers
 if beautiful.wallpaper then
     for s = 1, screen.count() do
@@ -33,10 +30,10 @@ end
 
 -- User Libraries {{{1
 -- Alt-tab like plugin {{{2
-cyclefocus = require('bundle.cyclefocus')
+cyclefocus = require('bundle.awesome-cyclefocus')
 
 -- Pomodoro {{{2
-pomodoro = require("bundle.pomodoro")
+pomodoro = require("bundle.awesome-pomodoro")
 -- init the pomodoro object with the current customizations
 pomodoro.format = function (t) return t end
 pomodoro.init()

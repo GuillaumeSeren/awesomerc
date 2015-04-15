@@ -10,9 +10,9 @@
 
 -- Config folder {{{1
 -- @TODO: Home can be used to detect the computer
-home = os.getenv("HOME")
-confdir = home .. "/.config/awesome"
-CONFIG_FOLDER = confdir .. "/config/"
+HOME_FOLDER    = os.getenv("HOME")
+AWESOME_FOLDER = HOME_FOLDER .. "/.config/awesome"
+CONFIG_FOLDER  = AWESOME_FOLDER .. "/config/"
 
 -- Config Files {{{1
 -- For a better readability and maintenance every configuration parts are in
