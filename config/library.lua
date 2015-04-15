@@ -1,0 +1,9 @@
+-- ---------------------------------------------
+-- Awesome WM configuration
+-- @author Guillaume Seren
+-- source  https://github.com/GuillaumeSeren/awesomerc
+-- file    library.lua
+-- Licence GPLv3
+--
+-- Local library file.
+-- ---------------------------------------------
