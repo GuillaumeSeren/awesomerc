@@ -10,3 +10,6 @@
 [submodule "bundle/awesome-newtag"]
 	path = bundle/awesome-newtag
 	url = https://github.com/seniorivn/awesome-newtag.git
+[submodule "bundle/awesome-copycats"]
+	path = bundle/awesome-copycats
+	url = https://github.com/copycat-killer/awesome-copycats.git
