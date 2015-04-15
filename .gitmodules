@@ -7,3 +7,6 @@
 [submodule "bundle/hints"]
 	path = bundle/hints
 	url = https://github.com/XLegion/hints.git
+[submodule "bundle/awesome-newtag"]
+	path = bundle/awesome-newtag
+	url = https://github.com/seniorivn/awesome-newtag.git
