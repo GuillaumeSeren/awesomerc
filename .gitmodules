@@ -13,3 +13,6 @@
 [submodule "bundle/awesome-copycats"]
 	path = bundle/awesome-copycats
 	url = https://github.com/copycat-killer/awesome-copycats.git
+[submodule "bundle/awesome-revelation"]
+	path = bundle/awesome-revelation
+	url = https://github.com/guotsuan/awesome-revelation.git
