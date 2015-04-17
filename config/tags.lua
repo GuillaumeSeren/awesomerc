@@ -10,9 +10,9 @@
 
 -- Define a tag table which will hold all screen tags.
 tags = {
-    names  = { "sys", "www", "cal",
-               "msg", "irc", "var",
-               "bin", "img", "dev" },
+    names  = { "sys",   "www", "mail",
+               "media", "irc", "var",
+               "bin",   "img", "dev" },
     layout = { layouts[6], layouts[6], layouts[6],
                layouts[6], layouts[6], layouts[6],
                layouts[6], layouts[6], layouts[6]
