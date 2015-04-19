@@ -17,7 +17,7 @@ So I try to also do it on my WM:
 
 ## Toolbar
 Actually on my toolbar:
-* NetWidget:   Display the network status.
+* NetWidget:   Display the network status, auto switch on active interface.
 * MemWidget:   Display the memory usage.
 * CpuWidget:   Display the load of the CPU.
 * TempWidget:  Display temp information.
