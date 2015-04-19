@@ -15,6 +15,17 @@ So I try to also do it on my WM:
 - Keep clear configuration around each need of the config.
 - Keep every module in the bundle directory, big fan of NeoBundle https://github.com/Shougo/neobundle.vim
 
+## Toolbar
+Actually on my toolbar:
+* NetWidget:   Display the network status, auto switch on active interface.
+* MemWidget:   Display the memory usage.
+* CpuWidget:   Display the load of the CPU.
+* TempWidget:  Display temp information.
+* SoundWidget: Display the sound level (PulseAudio support).
+* BatWidget:   Display the information of available bat of the system.
+* DateWidget:  Display the date.
+* TimeWidget:  Display the current time.
+
 ## Participate !
 If you find it useful, and would like to add your tips and tricks in it,
 feel free to fork this project and fill a __Pull Request__.

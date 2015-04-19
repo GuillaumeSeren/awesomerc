@@ -5,10 +5,9 @@
 -- file    rc.lua
 -- Licence GPLv3
 --
--- Set the toolbar.
+-- Set the toolbar Wibox.
 -- ---------------------------------------------
 
--- Wibox
 -- Colours {{{1
 coldef      = "</span>"
 colwhi      = "<span color='#b2b2b2'>"
@@ -396,16 +395,29 @@ vicious.register(volumewidget, volumeInfo, "$1%", 1)
 
 -- Net widget {{{1
 -- @TODO: Add auto switch lan/wan
+netActiveInfo = wibox.widget.textbox()
+function netInterfaceActiveDecorated()
+    -- @FIXME: Use netInterfaceActiveName input here
+    local netActiveInterface = io.popen("ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d':' -f1 | head -n 1")
+    local interface = netActiveInterface:read()
+    local output = green .. interface .. coldef
+    netActiveInterface:close()
+    return output
+end
+local netActiveInterfaceName = io.popen("ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d':' -f1 | head -n 1"):read()
+
+vicious.register(netActiveInfo, netInterfaceActiveDecorated, "$1%", 1)
 netdownicon = wibox.widget.imagebox()
 netdownicon:set_image(beautiful.widget_netdown)
 netdownicon.align = "middle"
 netdowninfo = wibox.widget.textbox()
-vicious.register(netdowninfo, vicious.widgets.net, green .. "${wlan0 down_kb}" .. coldef, 1)
+vicious.register(netdowninfo, vicious.widgets.net, green .. "${"..netActiveInterfaceName .." down_kb}" .. coldef, 1)
+-- vicious.register(netdowninfo, vicious.widgets.net, green .. "${".."eth0".." down_kb}" .. coldef, 1)
 netupicon = wibox.widget.imagebox()
 netupicon:set_image(beautiful.widget_netup)
 netupicon.align = "middle"
 netupinfo = wibox.widget.textbox()
-vicious.register(netupinfo, vicious.widgets.net, red .. "${wlan0 up_kb}" .. coldef, 1)
+vicious.register(netupinfo, vicious.widgets.net, red .. "${" .. netActiveInterfaceName .." up_kb}" .. coldef, 1)
 
 -- Memory widget {{{1
 memicon = wibox.widget.imagebox()
@@ -501,6 +513,7 @@ for s = 1, screen.count() do
     -- Widgets that are aligned to the upper right {{{1
     local right_layout = wibox.layout.fixed.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
+    right_layout:add(netActiveInfo)
     right_layout:add(netdownicon)
     right_layout:add(netdowninfo)
     right_layout:add(spacer)
