@@ -8,6 +8,11 @@
 -- Global Awesome WM config file.
 -- ---------------------------------------------
 
+-- Task-List {{{1
+-- @TODO: Toolbar, Add keyboard layout.
+-- @TODO: Add better overall design maybe try powerline.
+-- @TODO: Auto update netWidget, try to detect the active interface.
+
 -- Config folder {{{1
 -- @TODO: Home can be used to detect the computer
 HOME_FOLDER    = os.getenv("HOME")
