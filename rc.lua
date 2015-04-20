@@ -12,6 +12,17 @@
 -- @TODO: Toolbar, Add keyboard layout.
 -- @TODO: Add better overall design maybe try powerline.
 -- @TODO: Auto update netWidget, try to detect the active interface.
+-- @TODO: Add screenWidget to display light / size and other infos.
+-- @TODO: Add some tweak to pomodoro, auto start / notification
+-- @TODO: Add option to cpuWidget to change profile, notification.
+-- @TODO: Add mpdWidget.
+-- @TODO: Add better notification system.
+-- @TODO: Change date format.
+-- @TODO: Change wallpaper on time interval + popup.
+-- @TODO: Display all over information widget (net, cpu, bat).
+-- @TODO: Change cpuWidget icon on status change.
+-- @TODO: Add cheat-sheet of shortcut.
+
 
 -- Config folder {{{1
 -- @TODO: Home can be used to detect the computer
