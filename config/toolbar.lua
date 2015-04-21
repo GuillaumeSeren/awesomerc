@@ -394,24 +394,31 @@ end
 vicious.register(volumewidget, volumeInfo, "$1%", 1)
 
 -- Net widget {{{1
--- @TODO: Add auto switch lan/wan
 netActiveInfo = wibox.widget.textbox()
-function netInterfaceActiveDecorated()
-    -- @FIXME: Use netInterfaceActiveName input here
+function netInterfaceActive()
     local netActiveInterface = io.popen("ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d':' -f1 | head -n 1")
     local interface = netActiveInterface:read()
     local output = green .. interface .. coldef
     netActiveInterface:close()
     return output
 end
+
+function netInterfaceActiveDecorated()
+    local interface = netInterfaceActive()
+    local output = green .. interface .. coldef
+    return output
+end
+
 local netActiveInterfaceName = io.popen("ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d':' -f1 | head -n 1"):read()
 
+-- @FIXME: Auto refresh / hide this widget on update
 vicious.register(netActiveInfo, netInterfaceActiveDecorated, "$1%", 1)
 netdownicon = wibox.widget.imagebox()
 netdownicon:set_image(beautiful.widget_netdown)
 netdownicon.align = "middle"
 netdowninfo = wibox.widget.textbox()
 vicious.register(netdowninfo, vicious.widgets.net, green .. "${"..netActiveInterfaceName .." down_kb}" .. coldef, 1)
+
 -- vicious.register(netdowninfo, vicious.widgets.net, green .. "${".."eth0".." down_kb}" .. coldef, 1)
 netupicon = wibox.widget.imagebox()
 netupicon:set_image(beautiful.widget_netup)
