@@ -395,24 +395,32 @@ vicious.register(volumewidget, volumeInfo, "$1%", 1)
 
 -- Net widget {{{1
 netActiveInfo = wibox.widget.textbox()
+
+-- Return the network active interface.
 function netInterfaceActive()
     local netActiveInterface = io.popen("ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d':' -f1 | head -n 1")
     local interface = netActiveInterface:read()
-    local output = green .. interface .. coldef
+    local output = interface
     netActiveInterface:close()
     return output
 end
 
+-- Return the decorated network name.
 function netInterfaceActiveDecorated()
     local interface = netInterfaceActive()
+    -- If no interface is UP now will be nil
+    if (interface == "" or interface == nil) then
+        interface = "???"
+    end
     local output = green .. interface .. coldef
     return output
 end
 
 local netActiveInterfaceName = io.popen("ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d':' -f1 | head -n 1"):read()
 
--- @FIXME: Auto refresh / hide this widget on update
 vicious.register(netActiveInfo, netInterfaceActiveDecorated, "$1%", 1)
+
+-- @FIXME: Auto refresh / hide this widget on update
 netdownicon = wibox.widget.imagebox()
 netdownicon:set_image(beautiful.widget_netdown)
 netdownicon.align = "middle"
