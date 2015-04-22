@@ -394,37 +394,65 @@ end
 vicious.register(volumewidget, volumeInfo, "$1%", 1)
 
 -- Net widget {{{1
-netActiveInfo = wibox.widget.textbox()
+
+-- Return the network active interface.
 function netInterfaceActive()
     local netActiveInterface = io.popen("ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d':' -f1 | head -n 1")
     local interface = netActiveInterface:read()
-    local output = green .. interface .. coldef
+    local output = interface
     netActiveInterface:close()
     return output
 end
 
+-- Return the decorated network name.
 function netInterfaceActiveDecorated()
     local interface = netInterfaceActive()
+    -- If no interface is UP now will be nil
+    if (interface == "" or interface == nil) then
+        interface = "???"
+    end
     local output = green .. interface .. coldef
     return output
 end
 
-local netActiveInterfaceName = io.popen("ip -o link show | awk '{print $2,$9}' | grep 'UP' | cut -d':' -f1 | head -n 1"):read()
+-- Return the data netWidget UP
+function netInterfaceActiveDecoratedUp(widget, args)
+    local interface = netInterfaceActive()
+    -- Default interface
+    if (interface == "" or interface == nil) then
+        interface = "wlan0"
+    end
+    local output = red .. "${".. interface .." up_kb}" .. coldef
+    return output
+end
+
+-- Return the data netWidget DOWN
+function netInterfaceActiveDecoratedDown(widget, args)
+    local interface = netInterfaceActive()
+    -- Default interface
+    if (interface == "" or interface == nil) then
+        interface = "wlan0"
+    end
+    local output = green .. "${".. interface .." down_kb}" .. coldef
+    return output
+end
+
+netActiveInfo = wibox.widget.textbox()
+vicious.register(netActiveInfo, netInterfaceActiveDecorated, "$1%", 1)
 
 -- @FIXME: Auto refresh / hide this widget on update
-vicious.register(netActiveInfo, netInterfaceActiveDecorated, "$1%", 1)
+-- @FIXME: still not perfect, it didn't auto reload.
 netdownicon = wibox.widget.imagebox()
 netdownicon:set_image(beautiful.widget_netdown)
 netdownicon.align = "middle"
 netdowninfo = wibox.widget.textbox()
-vicious.register(netdowninfo, vicious.widgets.net, green .. "${"..netActiveInterfaceName .." down_kb}" .. coldef, 1)
+vicious.register(netdowninfo, vicious.widgets.net, netInterfaceActiveDecoratedDown(netdowninfo, args), 1)
 
--- vicious.register(netdowninfo, vicious.widgets.net, green .. "${".."eth0".." down_kb}" .. coldef, 1)
 netupicon = wibox.widget.imagebox()
 netupicon:set_image(beautiful.widget_netup)
 netupicon.align = "middle"
 netupinfo = wibox.widget.textbox()
-vicious.register(netupinfo, vicious.widgets.net, red .. "${" .. netActiveInterfaceName .." up_kb}" .. coldef, 1)
+vicious.register(netupinfo, vicious.widgets.net, netInterfaceActiveDecoratedUp(netupinfo, args), 1)
 
 -- Memory widget {{{1
 memicon = wibox.widget.imagebox()
