@@ -138,27 +138,43 @@ mytextclock:buttons(util.table.join( awful.button({ }, 1, function() show(-1) en
 awful.button({ }, 3, function() show(1) end)))
 
 -- /home fs widget {{{1
+-- fshicon {{{2
 fshicon = wibox.widget.imagebox()
-fshicon:set_image(theme.confdir .. "/widgets/fs.png")
+fshicon:set_image(beautiful.widget_fs)
+
+-- fshwidget {{{2
 fshwidget = wibox.widget.textbox()
 vicious.register(fshwidget, vicious.widgets.fs,
-function (widget, args)
-    if args["{/home used_p}"] >= 95 and args["{/home used_p}"] < 99 then
-        return colwhi .. args["{/home used_p}"] .. "%" .. coldef
-    elseif args["{/home used_p}"] >= 99 and args["{/home used_p}"] <= 100 then
-        naughty.notify({ title = "Attenzione", text = "Partizione /home esaurita!\nFa' un po' di spazio.",
-        timeout = 10,
-        position = "top_right",
-        fg = beautiful.fg_urgent,
-        bg = beautiful.bg_urgent })
-        return colwhi .. args["{/home used_p}"] .. "%" .. coldef
-    else
-        return azure .. args["{/home used_p}"] .. "%" .. coldef
-    end
-end, 620)
+    function (widget, args)
+        -- OK zone
+        if args["{/home used_p}"] >= 0 and args["{/home used_p}"] < 85 then
+            return azure .. args["{/home used_p}"] .. "%" .. coldef
+        -- Alert zone
+        elseif args["{/home used_p}"] >= 75 and args["{/home used_p}"] <= 85 then
+            return orange .. args["{/home used_p}"] .. "%" .. coldef
+        -- Warning zone
+        elseif args["{/home used_p}"] >= 85 and args["{/home used_p}"] <= 100 then
+            naughty.notify({
+                title = "Warning",
+                text = "Partition /home is nearly full\nDo some cleaning.",
+                timeout = 10,
+                position = "top_right",
+                fg = beautiful.fg_urgent,
+                bg = beautiful.bg_urgent
+            })
+            return red .. args["{/home used_p}"] .. "%" .. coldef
+        -- Default case
+        else
+            return azure .. args["{/home used_p}"] .. "%" .. coldef
+        end
+    end,
+    620)
 
+-- @TODO: Clean / Refactor
 local infos = nil
 
+-- Function remove_info() {{{3
+-- Clean notification popup
 function remove_info()
     if infos ~= nil then
         naughty.destroy(infos)
@@ -166,25 +182,31 @@ function remove_info()
     end
 end
 
+-- Function add_info() {{{3
+-- Populate and display a popup.
 function add_info()
     remove_info()
     local capi = {
         mouse = mouse,
         screen = screen
     }
-    local cal = awful.util.pread(scriptdir .. "dfs")
-    cal = string.gsub(cal, "          ^%s*(.-)%s*$", "%1")
+    local cal = awful.util.pread("df -h")
+    -- @TODO: Add better layout
     infos = naughty.notify({
-        text = string.format('<span font_desc="%s">%s</span>', "Terminus", cal),
-          timeout = 0,
+        text = string.format(
+            '<span font_desc="%s">%s</span>',
+            "Terminus",
+            cal),
+        timeout = 0,
         position = "top_right",
         margin = 10,
         height = 170,
         width = 585,
-        screen    = capi.mouse.screen
+        screen = capi.mouse.screen
     })
 end
 
+-- Mouse event listener {{{3
 fshwidget:connect_signal('mouse::enter', function () add_info() end)
 fshwidget:connect_signal('mouse::leave', function () remove_info() end)
 
@@ -427,6 +449,7 @@ function netInterfaceActiveDecoratedUp(widget, args)
 end
 
 -- Return the data netWidget DOWN
+-- @TODO: Would be qreat to hide
 function netInterfaceActiveDecoratedDown(widget, args)
     local interface = netInterfaceActive()
     -- Default interface
@@ -555,6 +578,7 @@ for s = 1, screen.count() do
     right_layout:add(netupicon)
     right_layout:add(netupinfo)
     right_layout:add(spacer)
+    -- @FIXME: need a pomodoro icon / notification
     right_layout:add(pomodoro.widget)
     right_layout:add(spacer)
     right_layout:add(memicon)
@@ -562,6 +586,9 @@ for s = 1, screen.count() do
     right_layout:add(spacer)
     right_layout:add(cpuicon)
     right_layout:add(cpuwidget)
+    right_layout:add(spacer)
+    right_layout:add(fshicon)
+    right_layout:add(fshwidget)
     right_layout:add(spacer)
     right_layout:add(tempicon)
     right_layout:add(tempwidget)
