@@ -168,7 +168,7 @@ vicious.register(fshwidget, vicious.widgets.fs,
             return azure .. args["{/home used_p}"] .. "%" .. coldef
         end
     end,
-    620)
+620)
 
 -- @TODO: Clean / Refactor
 local infos = nil
@@ -484,8 +484,50 @@ memwidget = wibox.widget.textbox()
 vicious.register(memwidget, vicious.widgets.mem, yellow .. "$2M" .. coldef, 1)
 
 -- Pomodoro widget : {{{1
--- @TODO: Add clean pomodor implementation here
-pomodorowidget = wibox.widget.textbox()
+
+pomodoroWorkNumber = 0
+pomodoroPauseNumber = 0
+
+-- Store actual status
+pomodoroStatus = "work"
+
+function getPomodoroIcon()
+    if pomodoroStatus == "work" then
+        icon = " ✎ "
+    else
+        icon = " ☕ "
+    end
+    return orange .. icon .. pomodoroWorkNumber .."/" .. coldef
+end
+
+pomodoroicon = wibox.widget.textbox()
+vicious.register(pomodoroicon, getPomodoroIcon, "$1%", 1)
+
+pomodorocount = wibox.widget.textbox()
+vicious.register(netActiveInfo, netInterfaceActiveDecorated, "$1%", 1)
+
+-- @TODO: Add clean pomodoro implementation here
+-- pomodorowidget = wibox.widget.textbox()
+-- init the pomodoro object with the current customizations
+pomodoro.format = function (t) return "" .. orange .. t .. coldef end
+pomodorowidget = pomodoro.init()
+-- pomodoro.widget
+-- Count every Pomodoro
+pomodoro.on_work_pomodoro_finish_callbacks = {
+    function()
+        -- Increment done pomodoro:
+        pomodoroWorkNumber = pomodoroWorkNumber + 1
+        pomodoroStatus = "pause"
+    end
+}
+
+pomodoro.on_pause_pomodoro_finish_callbacks = {
+    function()
+        pomodoroPauseNumber = pomodoroPauseNumber + 1
+        pomodoroStatus = "work"
+    end
+}
+
 
 -- Spacer {{{1
 spacer = wibox.widget.textbox(" ")
@@ -578,7 +620,7 @@ for s = 1, screen.count() do
     right_layout:add(netupicon)
     right_layout:add(netupinfo)
     right_layout:add(spacer)
-    -- @FIXME: need a pomodoro icon / notification
+    right_layout:add(pomodoroicon)
     right_layout:add(pomodoro.widget)
     right_layout:add(spacer)
     right_layout:add(memicon)

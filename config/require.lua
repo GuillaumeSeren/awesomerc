@@ -34,9 +34,6 @@ cyclefocus = require('bundle.awesome-cyclefocus')
 
 -- Pomodoro {{{2
 pomodoro = require("bundle.awesome-pomodoro")
--- init the pomodoro object with the current customizations
-pomodoro.format = function (t) return t end
-pomodoro.init()
 
 -- hints {{{2
 require("bundle.hints")

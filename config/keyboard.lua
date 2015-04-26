@@ -22,6 +22,10 @@ globalkeys = awful.util.table.join(
     awful.key({ altkey }, "p", function()
         awful.util.spawn("screenshot",false)
     end),
+    -- Pomodoro Start ! {{{2
+    awful.key({ modkey, "Shift" }, "p", function()
+        pomodoro:start()
+    end),
     -- Screen Brightness down {{{2
     awful.key({ }, "XF86MonBrightnessDown", function ()
         awful.util.spawn("xbacklight -dec 10")
