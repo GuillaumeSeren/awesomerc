@@ -28,7 +28,8 @@ gold        = "<span color='#e7b400'>"
 -- Textclock widget {{{1
 clockicon = wibox.widget.imagebox()
 clockicon:set_image(beautiful.widget_clock)
-mytextclock = awful.widget.textclock("<span color='#7788af'>%A %d %B</span> " .. blue .. "</span> <span color='#de5e1e'>%H:%M</span> ")
+-- mytextclock = awful.widget.textclock("<span color='#7788af'>%A %d %B</span> " .. blue .. "</span> <span color='#de5e1e'>%H:%M</span> ")
+mytextclock = awful.widget.textclock(blue .. "%A %d %B " .. coldef .. orange .. "%H:%M ".. coldef)
 
 -- Calendar attached to the textclock {{{1
 local os = os
@@ -73,7 +74,7 @@ local function create_calendar()
     local first_day = os.time({ day = 1, month = cal_month, year = cal_year})
     local first_day_in_week =
     os.date("%w", first_day)
-    local result = "do lu ma me gi ve sa\n"
+    local result = "di lu ma me je ve sa\n"
     for i = 1, first_day_in_week do
         result = result .. "   "
     end
@@ -126,16 +127,19 @@ function show(inc_offset)
 
     local char_width = char_width or calculate_char_width()
     local header, cal_text = create_calendar()
-    calendar = naughty.notify({ title = header,
-    text = cal_text,
-    timeout = 0, hover_timeout = 0.5,
-})
+    calendar = naughty.notify({
+        title = header,
+        text = cal_text,
+        timeout = 0,
+        hover_timeout = 0.5})
 end
 
 mytextclock:connect_signal("mouse::enter", function() show(0) end)
 mytextclock:connect_signal("mouse::leave", hide)
-mytextclock:buttons(util.table.join( awful.button({ }, 1, function() show(-1) end),
-awful.button({ }, 3, function() show(1) end)))
+mytextclock:buttons(util.table.join(
+    awful.button({ }, 1, function() show(-1) end),
+    awful.button({ }, 3, function() show(1) end)
+))
 
 -- /home fs widget {{{1
 -- fshicon {{{2
@@ -540,48 +544,13 @@ mypromptbox = {}
 mylayoutbox = {}
 mytaglist = {}
 mytaglist.buttons = awful.util.table.join(
-awful.button({ }, 1, awful.tag.viewonly),
-awful.button({ modkey }, 1, awful.client.movetotag),
-awful.button({ }, 3, awful.tag.viewtoggle),
-awful.button({ modkey }, 3, awful.client.toggletag),
-awful.button({ }, 4, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end),
-awful.button({ }, 5, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end)
+    awful.button({ }        , 1, awful.tag.viewonly),
+    awful.button({ modkey } , 1, awful.client.movetotag),
+    awful.button({ }        , 3, awful.tag.viewtoggle),
+    awful.button({ modkey } , 3, awful.client.toggletag),
+    awful.button({ }        , 4, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end),
+    awful.button({ }        , 5, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end)
 )
-
--- TaskList {{{1
-mytasklist = {}
-mytasklist.buttons = awful.util.table.join(
-awful.button({ }, 1, function (c)
-    if c == client.focus then
-        c.minimized = true
-    else
-        -- Without this, the following
-        c.minimized = false
-        if not c:isvisible() then
-            awful.tag.viewonly(c:tags()[1])
-        end
-        -- This will also un-minimize
-        -- the client, if needed
-        client.focus = c
-        c:raise()
-    end
-end),
-awful.button({ }, 3, function ()
-    if instance then
-        instance:hide()
-        instance = nil
-    else
-        instance = awful.menu.clients({ width=250 })
-    end
-end),
-awful.button({ }, 4, function ()
-    awful.client.focus.byidx(1)
-    if client.focus then client.focus:raise() end
-end),
-awful.button({ }, 5, function ()
-    awful.client.focus.byidx(-1)
-    if client.focus then client.focus:raise() end
-end))
 
 for s = 1, screen.count() do
 
@@ -591,16 +560,14 @@ for s = 1, screen.count() do
     -- We need one layoutbox per screen. {{{1
     mylayoutbox[s] = awful.widget.layoutbox(s)
     mylayoutbox[s]:buttons(awful.util.table.join(
-    awful.button({ }, 1, function () awful.layout.inc(layouts, 1) end),
-    awful.button({ }, 3, function () awful.layout.inc(layouts, -1) end),
-    awful.button({ }, 4, function () awful.layout.inc(layouts, 1) end),
-    awful.button({ }, 5, function () awful.layout.inc(layouts, -1) end)))
+        awful.button({ }, 1, function () awful.layout.inc(layouts, 1) end),
+        awful.button({ }, 3, function () awful.layout.inc(layouts, -1) end),
+        awful.button({ }, 4, function () awful.layout.inc(layouts, 1) end),
+        awful.button({ }, 5, function () awful.layout.inc(layouts, -1) end)
+    ))
 
     -- Create a taglist widget {{{1
     mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, mytaglist.buttons)
-
-    -- Create a tasklist widget {{{1
-    mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons)
 
     -- Create the upper wibox {{{1
     mywibox[s] = awful.wibox({ position = "top", screen = s, height = 20 })
@@ -649,9 +616,6 @@ for s = 1, screen.count() do
     -- Now bring it all together (with the tasklist in the middle) {{{1
     local layout = wibox.layout.align.horizontal()
     layout:set_left(left_layout)
-    layout:set_middle(mytasklist[s])
     layout:set_right(right_layout)
-
     mywibox[s]:set_widget(layout)
-
 end
