@@ -13,7 +13,6 @@
 -- @TODO: Add better overall design maybe try powerline.
 -- @TODO: Auto update netWidget, try to detect the active interface.
 -- @TODO: Add screenWidget to display light / size and other infos.
--- @TODO: Add some tweak to pomodoro, auto start / notification
 -- @TODO: Add option to cpuWidget to change profile, notification.
 -- @TODO: Add mpdWidget.
 -- @TODO: Add better notification system.
