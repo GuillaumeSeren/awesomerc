@@ -36,7 +36,7 @@ globalkeys = awful.util.table.join(
     end),
     -- Sound ajustement down {{{2
     awful.key({ }, "XF86AudioLowerVolume", function ()
-        awful.util.spawn("pactl set-sink-volume @DEFAULT_SINK@ -- -10%")
+        awful.util.spawn("pactl set-sink-volume @DEFAULT_SINK@ -10%")
     end),
     -- Sound ajustement up {{{2
     awful.key({ }, "XF86AudioRaiseVolume", function ()
