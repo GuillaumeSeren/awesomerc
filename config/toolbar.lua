@@ -552,6 +552,41 @@ mytaglist.buttons = awful.util.table.join(
     awful.button({ }        , 5, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end)
 )
 
+-- TaskList {{{1
+mytasklist = {}
+mytasklist.buttons = awful.util.table.join(
+awful.button({ }, 1, function (c)
+    if c == client.focus then
+        c.minimized = true
+    else
+        -- Without this, the following
+        c.minimized = false
+        if not c:isvisible() then
+            awful.tag.viewonly(c:tags()[1])
+        end
+        -- This will also un-minimize
+        -- the client, if needed
+        client.focus = c
+        c:raise()
+    end
+end),
+awful.button({ }, 3, function ()
+    if instance then
+        instance:hide()
+        instance = nil
+    else
+        instance = awful.menu.clients({ width=250 })
+    end
+end),
+awful.button({ }, 4, function ()
+    awful.client.focus.byidx(1)
+    if client.focus then client.focus:raise() end
+end),
+awful.button({ }, 5, function ()
+    awful.client.focus.byidx(-1)
+    if client.focus then client.focus:raise() end
+end))
+
 for s = 1, screen.count() do
 
     -- Create a promptbox for each screen {{{1
@@ -568,6 +603,9 @@ for s = 1, screen.count() do
 
     -- Create a taglist widget {{{1
     mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, mytaglist.buttons)
+
+    -- Create a tasklist widget {{{1
+    mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons)
 
     -- Create the upper wibox {{{1
     mywibox[s] = awful.wibox({ position = "top", screen = s, height = 20 })
@@ -616,6 +654,7 @@ for s = 1, screen.count() do
     -- Now bring it all together (with the tasklist in the middle) {{{1
     local layout = wibox.layout.align.horizontal()
     layout:set_left(left_layout)
+    layout:set_middle(mytasklist[s])
     layout:set_right(right_layout)
     mywibox[s]:set_widget(layout)
 end
