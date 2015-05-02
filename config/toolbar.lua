@@ -8,7 +8,7 @@
 -- Set the toolbar Wibox.
 -- ---------------------------------------------
 
--- Colours {{{1
+-- Colors {{{1
 coldef      = "</span>"
 colwhi      = "<span color='#b2b2b2'>"
 colbwhi     = "<span color='#ffffff'>"
@@ -28,7 +28,6 @@ gold        = "<span color='#e7b400'>"
 -- Textclock widget {{{1
 clockicon = wibox.widget.imagebox()
 clockicon:set_image(beautiful.widget_clock)
--- mytextclock = awful.widget.textclock("<span color='#7788af'>%A %d %B</span> " .. blue .. "</span> <span color='#de5e1e'>%H:%M</span> ")
 mytextclock = awful.widget.textclock(blue .. "%A %d %B " .. coldef .. orange .. "%H:%M ".. coldef)
 
 -- Calendar attached to the textclock {{{1
@@ -213,6 +212,28 @@ end
 -- Mouse event listener {{{3
 fshwidget:connect_signal('mouse::enter', function () add_info() end)
 fshwidget:connect_signal('mouse::leave', function () remove_info() end)
+
+-- -- CPU profile widget {{{1
+-- cpuProfileWidget = wibox.widget.textbox()
+-- -- function netInterfaceActiveDecoratedDown(widget, args)
+-- function getCpuProfile(widget, args)
+--     return purple.."test"..coldef
+-- end
+
+-- Initialize widget
+-- cpuwidget1 = awful.widget.graph()
+cpuWidgetGraph = awful.widget.graph()
+-- Graph properties
+cpuWidgetGraph:set_width(75)
+cpuWidgetGraph:set_height(30)
+cpuWidgetGraph:set_border_color("#222222")
+cpuWidgetGraph:set_background_color("#000000")
+cpuWidgetGraph:set_color({ type = "linear", from = { 75,0 }, to = { 75,30 }, stops = { {0, "#FF0000"}, {0.5, "#FFFF00"},
+{1, "#00FF00" }}})
+
+-- vicious.register(cpuProfileWidget, vicious.widgets.cpu, getCpuProfile(widget, args), 3)
+-- Register widget
+vicious.register(cpuWidgetGraph, vicious.widgets.cpu, "$2", 1)
 
 -- CPU widget {{{1
 cpuicon = wibox.widget.imagebox()
@@ -630,6 +651,8 @@ for s = 1, screen.count() do
     right_layout:add(spacer)
     right_layout:add(memicon)
     right_layout:add(memwidget)
+    right_layout:add(spacer)
+    right_layout:add(cpuWidgetGraph)
     right_layout:add(spacer)
     right_layout:add(cpuicon)
     right_layout:add(cpuwidget)
