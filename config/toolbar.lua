@@ -9,6 +9,7 @@
 -- ---------------------------------------------
 
 -- Colors {{{1
+-- @TODO: Refactor color aside and text container other side.
 coldef      = "</span>"
 colwhi      = "<span color='#b2b2b2'>"
 colbwhi     = "<span color='#ffffff'>"
@@ -213,27 +214,22 @@ end
 fshwidget:connect_signal('mouse::enter', function () add_info() end)
 fshwidget:connect_signal('mouse::leave', function () remove_info() end)
 
--- -- CPU profile widget {{{1
--- cpuProfileWidget = wibox.widget.textbox()
--- -- function netInterfaceActiveDecoratedDown(widget, args)
--- function getCpuProfile(widget, args)
---     return purple.."test"..coldef
--- end
-
--- Initialize widget
--- cpuwidget1 = awful.widget.graph()
+-- CPU profile widget {{{1
 cpuWidgetGraph = awful.widget.graph()
--- Graph properties
-cpuWidgetGraph:set_width(75)
-cpuWidgetGraph:set_height(30)
-cpuWidgetGraph:set_border_color("#222222")
+cpuWidgetGraph:set_width(100):set_height(20)
+-- Add multi graph
+cpuWidgetGraph:set_stack(true):set_max_value(100)
 cpuWidgetGraph:set_background_color("#000000")
-cpuWidgetGraph:set_color({ type = "linear", from = { 75,0 }, to = { 75,30 }, stops = { {0, "#FF0000"}, {0.5, "#FFFF00"},
-{1, "#00FF00" }}})
+cpuWidgetGraph:set_stack_colors({ "#7493d2", "#AECF96", "#e33a6e", "#ffffff" })
 
--- vicious.register(cpuProfileWidget, vicious.widgets.cpu, getCpuProfile(widget, args), 3)
--- Register widget
-vicious.register(cpuWidgetGraph, vicious.widgets.cpu, "$2", 1)
+vicious.register(cpuWidgetGraph, vicious.widgets.cpu,
+    function (widget, args)
+        -- @FIXME: Add function to count the number of core
+        cpuWidgetGraph:add_value(args[2], 1) -- Core 1, color 1
+        cpuWidgetGraph:add_value(args[3], 2) -- Core 2, color 2
+        cpuWidgetGraph:add_value(args[4], 3) -- Core 3, color 3
+        cpuWidgetGraph:add_value(args[5], 4) -- Core 3, color 3
+    end, 3)
 
 -- CPU widget {{{1
 cpuicon = wibox.widget.imagebox()
