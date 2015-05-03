@@ -232,9 +232,11 @@ vicious.register(cpuWidgetGraph, vicious.widgets.cpu,
     end, 3)
 
 -- CPU widget {{{1
+-- @FIXME: Change icon on cpu governator
 cpuicon = wibox.widget.imagebox()
 cpuicon:set_image(beautiful.widget_cpu)
 cpuwidget = wibox.widget.textbox()
+-- @FIXME: Show a average of all cpu power
 vicious.register(cpuwidget, vicious.widgets.cpu, purple .. "$1%" .. coldef, 3)
 cpuicon:buttons(awful.util.table.join(awful.button({ }, 1, function () awful.util.spawn(tasks, false) end)))
 
