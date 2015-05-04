@@ -216,20 +216,20 @@ fshwidget:connect_signal('mouse::leave', function () remove_info() end)
 
 -- CPU profile widget {{{1
 cpuWidgetGraph = awful.widget.graph()
-cpuWidgetGraph:set_width(100):set_height(20)
--- Add multi graph
-cpuWidgetGraph:set_stack(true):set_max_value(100)
+cpuWidgetGraph:set_width(50):set_height(20)
 cpuWidgetGraph:set_background_color("#000000")
-cpuWidgetGraph:set_stack_colors({ "#7493d2", "#AECF96", "#e33a6e", "#ffffff" })
-
-vicious.register(cpuWidgetGraph, vicious.widgets.cpu,
-    function (widget, args)
-        -- @FIXME: Add function to count the number of core
-        cpuWidgetGraph:add_value(args[2], 1) -- Core 1, color 1
-        cpuWidgetGraph:add_value(args[3], 2) -- Core 2, color 2
-        cpuWidgetGraph:add_value(args[4], 3) -- Core 3, color 3
-        cpuWidgetGraph:add_value(args[5], 4) -- Core 3, color 3
-    end, 3)
+cpuWidgetGraph:set_color({
+    type = "linear",
+    from = { 0, 0 },
+    to = { 50, 0 },
+    stops = {
+        { 0, "#FF5656" },
+        { 0.5, "#88A175" },
+        { 1, "#AECF96" }
+    }
+})
+vicious.cache(vicious.widgets.cpu)
+vicious.register(cpuWidgetGraph, vicious.widgets.cpu, "$1", 3)
 
 -- CPU widget {{{1
 -- @FIXME: Change icon on cpu governator
