@@ -240,6 +240,24 @@ cpuwidget = wibox.widget.textbox()
 vicious.register(cpuwidget, vicious.widgets.cpu, purple .. "$1%" .. coldef, 3)
 cpuicon:buttons(awful.util.table.join(awful.button({ }, 1, function () awful.util.spawn(tasks, false) end)))
 
+-- MAIL widget {{{1
+
+-- Return mail icon & status
+function mailStatus()
+    local mailStatusCmd = io.popen("notmuch count INBOX")
+    local mailStatusValue = mailStatusCmd:read()
+    mailStatusCmd:close()
+    local output = ""
+    if tonumber(mailStatusValue) > 0 then
+        output = "M "..mailStatusValue
+    else
+        output = "M 0"
+    end
+    return blue .. output .. coldef
+end
+mailWidget = wibox.widget.textbox()
+vicious.register(mailWidget, mailStatus, "$1%", 1)
+
 -- Temp widget {{{1
 tempicon = wibox.widget.imagebox()
 tempicon:set_image(beautiful.widget_temp)
@@ -646,6 +664,8 @@ for s = 1, screen.count() do
     right_layout:add(spacer)
     right_layout:add(pomodoroicon)
     right_layout:add(pomodoro.widget)
+    right_layout:add(spacer)
+    right_layout:add(mailWidget)
     right_layout:add(spacer)
     right_layout:add(memicon)
     right_layout:add(memwidget)
