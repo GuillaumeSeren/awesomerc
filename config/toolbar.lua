@@ -258,6 +258,23 @@ end
 mailWidget = wibox.widget.textbox()
 vicious.register(mailWidget, mailStatus, "$1%", 1)
 
+-- Brightness widget {{{1
+function getScreenBrightness()
+    local screenBrightnessCmd = io.popen("xbacklight | cut -d'.' -f1")
+    local screenBrightnessValue = screenBrightnessCmd:read()
+    screenBrightnessCmd:close()
+    local output = ""
+    if tonumber(screenBrightnessValue) > 0 then
+        output = "S "..screenBrightnessValue.."%"
+    else
+        output = "S 0"
+    end
+    return orange .. output .. coldef
+end
+
+brightnessWidget = wibox.widget.textbox()
+vicious.register(brightnessWidget, getScreenBrightness, "$1%", 1)
+
 -- Temp widget {{{1
 tempicon = wibox.widget.imagebox()
 tempicon:set_image(beautiful.widget_temp)
@@ -666,6 +683,8 @@ for s = 1, screen.count() do
     right_layout:add(pomodoro.widget)
     right_layout:add(spacer)
     right_layout:add(mailWidget)
+    right_layout:add(spacer)
+    right_layout:add(brightnessWidget)
     right_layout:add(spacer)
     right_layout:add(memicon)
     right_layout:add(memwidget)
