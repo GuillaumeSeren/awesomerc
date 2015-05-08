@@ -277,7 +277,7 @@ vicious.register(brightnessWidget, getScreenBrightness, "$1%", 1)
 
 -- Redshift widget {{{1
 function getRedshiftStatus()
-    local redshiftStatusCmd = io.popen("redshift -p | grep -i 'Température' | cut -d ':' -f2 | sed s/\\s//")
+    local redshiftStatusCmd = io.popen("redshift -p | grep -i 'Température' | cut -d ':' -f2 | sed 's/\\ //g'")
     local redshiftStatusValue = redshiftStatusCmd:read()
     redshiftStatusCmd:close()
     local output = ""
