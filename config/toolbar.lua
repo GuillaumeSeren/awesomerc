@@ -275,6 +275,19 @@ end
 brightnessWidget = wibox.widget.textbox()
 vicious.register(brightnessWidget, getScreenBrightness, "$1%", 1)
 
+-- Redshift widget {{{1
+function getRedshiftStatus()
+    local redshiftStatusCmd = io.popen("redshift -p | grep -i 'Température' | cut -d ':' -f2 | sed s/\\s//")
+    local redshiftStatusValue = redshiftStatusCmd:read()
+    redshiftStatusCmd:close()
+    local output = ""
+        output = "R "..redshiftStatusValue
+    return red .. output .. coldef
+end
+
+redshiftWidget = wibox.widget.textbox()
+vicious.register(redshiftWidget, getRedshiftStatus, "$1%", 1)
+
 -- Temp widget {{{1
 tempicon = wibox.widget.imagebox()
 tempicon:set_image(beautiful.widget_temp)
@@ -685,6 +698,8 @@ for s = 1, screen.count() do
     right_layout:add(mailWidget)
     right_layout:add(spacer)
     right_layout:add(brightnessWidget)
+    right_layout:add(spacer)
+    right_layout:add(redshiftWidget)
     right_layout:add(spacer)
     right_layout:add(memicon)
     right_layout:add(memwidget)
