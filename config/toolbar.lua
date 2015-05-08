@@ -276,12 +276,27 @@ brightnessWidget = wibox.widget.textbox()
 vicious.register(brightnessWidget, getScreenBrightness, "$1%", 1)
 
 -- Redshift widget {{{1
+function getRedshiftPeriod()
+    local redshiftPeriodCmd = io.popen("redshift -p | grep -i 'Période' | cut -d ':' -f2 | sed 's/\\ //g'")
+    local redshiftPeriodValue = redshiftPeriodCmd:read()
+    redshiftPeriodCmd:close()
+    local output = ""
+    if tostring(redshiftStatusValue) == "Jour" then
+        output = "☼"
+    else
+        output = "☾"
+    end
+
+    return output
+end
+
 function getRedshiftStatus()
     local redshiftStatusCmd = io.popen("redshift -p | grep -i 'Température' | cut -d ':' -f2 | sed 's/\\ //g'")
     local redshiftStatusValue = redshiftStatusCmd:read()
     redshiftStatusCmd:close()
+    local symbol = getRedshiftPeriod()
     local output = ""
-        output = "R "..redshiftStatusValue
+        output = symbol .. " "..redshiftStatusValue
     return red .. output .. coldef
 end
 
