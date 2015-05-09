@@ -277,16 +277,15 @@ vicious.register(brightnessWidget, getScreenBrightness, "$1%", 1)
 
 -- Redshift widget {{{1
 function getRedshiftPeriod()
-    local redshiftPeriodCmd = io.popen("redshift -p | grep -i 'Période' | cut -d ':' -f2 | sed 's/\\ //g'")
+    local redshiftPeriodCmd = io.popen("redshift -p | grep -i 'Période' | cut -d ':' -f2")
     local redshiftPeriodValue = redshiftPeriodCmd:read()
     redshiftPeriodCmd:close()
     local output = ""
-    if tostring(redshiftStatusValue) == "Jour" then
+    if redshiftPeriodValue == " Jour" then
         output = "☼"
     else
         output = "☾"
     end
-
     return output
 end
 
