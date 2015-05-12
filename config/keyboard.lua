@@ -16,48 +16,50 @@ globalkeys = awful.util.table.join(
     awful.key({ altkey }, "Escape", function ()
         --awful.util.spawn("pkill screenkey",false),
         awful.util.spawn("screenkey",false)
-        awful.util.spawn("notify-send -i 'screenkeyStart' 'ScreenKey is started' ")
+        alert('screenKeyStart', 'ScreenKey is started')
     end),
     -- Capture a screenshot @FIXME {{{2
     -- @FIXME: Find a tool
     awful.key({ altkey }, "p", function()
         awful.util.spawn("screenshot",false)
+        alert('screenShotNow', 'Let\'s take a screenshot')
     end),
     -- Pomodoro Start ! {{{2
     awful.key({ modkey, "Shift" }, "p", function()
         pomodoro:start()
         -- Add a notification !
-        awful.util.spawn("notify-send -i 'pomodoroStart' 'Pomodoro is started' ")
+        alert('pomodoroStart', 'Pomodoro is started')
     end),
     -- Screen Brightness down {{{2
     awful.key({ }, "XF86MonBrightnessDown", function ()
         awful.util.spawn("xbacklight -dec 10")
-        awful.util.spawn("notify-send -i 'backlightDown' 'Backlight down by 10%' ")
+        alert('backLightDown', 'Back light down by 10%')
     end),
     -- Screen Brightness up {{{2
     awful.key({ }, "XF86MonBrightnessUp", function ()
         awful.util.spawn("xbacklight -inc 10")
-        awful.util.spawn("notify-send -i 'backlightUp' 'Backlight up by 10%' ")
+        alert('backLightDown', 'Back light up by 10%')
     end),
     -- Sound ajustement down {{{2
     awful.key({ }, "XF86AudioLowerVolume", function ()
         awful.util.spawn("pactl set-sink-volume @DEFAULT_SINK@ -10%")
-        awful.util.spawn("notify-send -i 'soundMixDown' 'Sound MIX down by 10%' ")
+        alert('soundMixDown', 'SoundMix down by 10%')
     end),
     -- Sound ajustement up {{{2
     awful.key({ }, "XF86AudioRaiseVolume", function ()
         awful.util.spawn("pactl set-sink-volume @DEFAULT_SINK@ +10%")
         awful.util.spawn("notify-send -i 'soundMixUp' 'Sound MIX up by 10%' ")
+        alert('soundMixDown', 'SoundMix up by 10%')
     end),
     -- Sound mute/unmute {{{2
     awful.key({ }, "XF86AudioMute", function ()
         awful.util.spawn("pactl set-sink-mute @DEFAULT_SINK@ toggle")
-        awful.util.spawn("notify-send -i 'soundMixMute' 'Sound MIX mute switch' ")
+        alert('soundMixMute', 'SoundMix mute switch')
     end),
     -- Sound Mic Mute {{{2
     awful.key({ }, "XF86AudioMicMute", function ()
         awful.util.spawn("pactl set-source-mute 2 toggle")
-        awful.util.spawn("notify-send -i 'soundMicMute' 'Sound MIC mute switch' ")
+        alert('soundMixMute', 'SoundMic mute switch')
     end),
     -- Revelation, exposé like (NOT WORKING) {{{2
     -- awful.key({ modkey,           }, "j", function ()

@@ -7,3 +7,8 @@
 --
 -- Local library file.
 -- ---------------------------------------------
+
+-- Display simple notification
+function alert(messageTitle, messageContent)
+    awful.util.spawn("notify-send -i '"..messageTitle.."' '"..messageContent.."' ")
+end
