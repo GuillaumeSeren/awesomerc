@@ -142,7 +142,9 @@ globalkeys = awful.util.table.join(
             awful.util.spawn("i3lock -e -c 000000")
         end),
     -- Dropdown terminal {{{2
-    awful.key({ modkey,	          }, "z",     function () scratch.drop(terminal) end),
+    awful.key({ modkey,	          }, "z",
+        function () scratch.drop(terminal)
+    end),
     -- Music control {{{2
     awful.key({ altkey, "Control" }, "Up", function ()
         awful.util.spawn( "mpc toggle", false )
