@@ -35,6 +35,9 @@ cyclefocus = require('bundle.awesome-cyclefocus')
 -- Pomodoro {{{2
 pomodoro = require("bundle.awesome-pomodoro")
 
+-- Scratch {{{2
+scratch = require("bundle.awesome-configs.scratch")
+
 -- hints {{{2
 require("bundle.hints")
 
