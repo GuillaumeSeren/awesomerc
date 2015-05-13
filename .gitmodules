@@ -16,3 +16,6 @@
 [submodule "bundle/awesome-revelation"]
 	path = bundle/awesome-revelation
 	url = https://github.com/guotsuan/awesome-revelation.git
+[submodule "bundle/awesome-configs"]
+	path = bundle/awesome-configs
+	url = http://git.sysphere.org/awesome-configs
