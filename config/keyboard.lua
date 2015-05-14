@@ -145,6 +145,10 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,	          }, "z",
         function () scratch.drop(terminal)
     end),
+    awful.key({ }, "XF86WLAN", function ()
+        rfkillWidget.rfkillMute()
+        alert('rfkillMute', 'RfKill mute networking')
+    end),
     -- Music control {{{2
     awful.key({ altkey, "Control" }, "Up", function ()
         awful.util.spawn( "mpc toggle", false )
