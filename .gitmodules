@@ -19,3 +19,6 @@
 [submodule "bundle/awesome-configs"]
 	path = bundle/awesome-configs
 	url = http://git.sysphere.org/awesome-configs
+[submodule "bundle/awesome-rfkill"]
+	path = bundle/awesome-rfkill
+	url = https://github.com/GuillaumeSeren/awesome-rfkill
