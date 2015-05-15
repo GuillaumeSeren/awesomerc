@@ -264,7 +264,7 @@ function getScreenBrightness()
     local screenBrightnessValue = screenBrightnessCmd:read()
     screenBrightnessCmd:close()
     local output = ""
-    if tonumber(screenBrightnessValue) > 0 then
+    if (tonumber(screenBrightnessValue) ~= nil and tonumber(screenBrightnessValue) > 0) then
         output = "S "..screenBrightnessValue.."%"
     else
         output = "S 0"
@@ -562,6 +562,17 @@ netupicon.align = "middle"
 netupinfo = wibox.widget.textbox()
 vicious.register(netupinfo, vicious.widgets.net, netInterfaceActiveDecoratedUp(netupinfo, args), 1)
 
+-- RfKill widget {{{1
+function getRfkillWidget(widget, args)
+    -- Here the rfkillWidget is not reachable
+    local rfkillWidget = require("bundle.awesome-rfkill")
+    local widget = rfkillWidget.getRfkillBlockedState()
+    return red .. widget ..coldef
+end
+
+rfkillWidget = wibox.widget.textbox()
+vicious.register(rfkillWidget, getRfkillWidget, "$1%", 1)
+
 -- Memory widget {{{1
 memicon = wibox.widget.imagebox()
 memicon:set_image(beautiful.widget_mem)
@@ -699,6 +710,9 @@ for s = 1, screen.count() do
     -- Widgets that are aligned to the upper right {{{1
     local right_layout = wibox.layout.fixed.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
+    right_layout:add(spacer)
+    right_layout:add(rfkillWidget)
+    right_layout:add(spacer)
     right_layout:add(netActiveInfo)
     right_layout:add(netdownicon)
     right_layout:add(netdowninfo)

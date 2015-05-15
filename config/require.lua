@@ -39,7 +39,7 @@ pomodoro = require("bundle.awesome-pomodoro")
 scratch = require("bundle.awesome-configs.scratch")
 
 -- RfKill {{{2
-require("bundle.awesome-rfkill")
+rfkillWidget = require("bundle.awesome-rfkill")
 
 -- hints {{{2
 require("bundle.hints")
