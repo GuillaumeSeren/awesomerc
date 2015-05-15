@@ -264,7 +264,7 @@ function getScreenBrightness()
     local screenBrightnessValue = screenBrightnessCmd:read()
     screenBrightnessCmd:close()
     local output = ""
-    if tonumber(screenBrightnessValue) > 0 then
+    if (tonumber(screenBrightnessValue) ~= nil and tonumber(screenBrightnessValue) > 0) then
         output = "S "..screenBrightnessValue.."%"
     else
         output = "S 0"
