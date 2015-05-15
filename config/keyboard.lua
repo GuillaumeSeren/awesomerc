@@ -146,6 +146,7 @@ globalkeys = awful.util.table.join(
         function () scratch.drop(terminal)
     end),
     awful.key({ }, "XF86WLAN", function ()
+        rfkillWidget = require("bundle.awesome-rfkill")
         rfkillWidget.rfkillMute()
         alert('rfkillMute', 'RfKill mute networking')
     end),
