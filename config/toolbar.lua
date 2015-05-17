@@ -573,6 +573,10 @@ end
 rfkillWidget = wibox.widget.textbox()
 vicious.register(rfkillWidget, getRfkillWidget, "$1%", 1)
 
+-- Mouse event listener
+rfkillWidget:connect_signal('mouse::enter', function () rfkillTooltipAdd() end)
+rfkillWidget:connect_signal('mouse::leave', function () rfkillTooltipRemove() end)
+
 -- Memory widget {{{1
 memicon = wibox.widget.imagebox()
 memicon:set_image(beautiful.widget_mem)
