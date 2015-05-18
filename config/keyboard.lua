@@ -14,7 +14,6 @@ globalkeys = awful.util.table.join(
     -- idea from :
     -- https://github.com/AndrewRadev/awesome-config/blob/master/rc.lua
     awful.key({ altkey }, "Escape", function ()
-        --awful.util.spawn("pkill screenkey",false),
         awful.util.spawn("screenkey",false)
         alert('screenKeyStart', 'ScreenKey is started')
     end),
@@ -48,7 +47,6 @@ globalkeys = awful.util.table.join(
     -- Sound ajustement up {{{2
     awful.key({ }, "XF86AudioRaiseVolume", function ()
         awful.util.spawn("pactl set-sink-volume @DEFAULT_SINK@ +10%")
-        awful.util.spawn("notify-send -i 'soundMixUp' 'Sound MIX up by 10%' ")
         alert('soundMixDown', 'SoundMix up by 10%')
     end),
     -- Sound mute/unmute {{{2
@@ -61,28 +59,17 @@ globalkeys = awful.util.table.join(
         awful.util.spawn("pactl set-source-mute 2 toggle")
         alert('soundMixMute', 'SoundMic mute switch')
     end),
-    -- Revelation, exposé like (NOT WORKING) {{{2
-    -- awful.key({ modkey,           }, "j", function ()
-    --     awful.client.focus.byidx( 1)
-    --     if client.focus then client.focus:raise() end
-    -- end),
-    -- awful.key({ modkey }, "j", function () hints.focus() end),
-    awful.key({ modkey,           }, "j",
-    function ()
+    awful.key({ modkey,           }, "j", function ()
         awful.client.focus.byidx( 1)
         if client.focus then client.focus:raise() end
     end),
-    -- awful.key({ }, "XF86LaunchA", revelation),
-        -- awful.client.focus.byidx( 1)
-        -- if client.focus then client.focus:raise() end
-        -- awful.util.spawn("pactl set-source-mute 2 toggle")
-    -- end),
     -- Show Menu {{{2
     awful.key({ modkey,           }, "w", function ()
-        mymainmenu:show({keygrabber=true}) end),
+        mymainmenu:show({keygrabber=true})
+    end),
     -- Show/Hide Wibox {{{2
     awful.key({ modkey }, "b", function ()
-    mywibox[mouse.screen].visible = not mywibox[mouse.screen].visible
+        mywibox[mouse.screen].visible = not mywibox[mouse.screen].visible
     end),
     -- Switch tag next/previous {{{2
     awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ),
