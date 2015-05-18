@@ -59,12 +59,6 @@ globalkeys = awful.util.table.join(
         awful.util.spawn("pactl set-source-mute 2 toggle")
         alert('soundMixMute', 'SoundMic mute switch')
     end),
-    -- Revelation, exposé like (NOT WORKING) {{{2
-    -- awful.key({ modkey,           }, "j", function ()
-    --     awful.client.focus.byidx( 1)
-    --     if client.focus then client.focus:raise() end
-    -- end),
-    -- awful.key({ modkey }, "j", function () hints.focus() end),
     awful.key({ modkey,           }, "j", function ()
         awful.client.focus.byidx( 1)
         if client.focus then client.focus:raise() end
@@ -75,7 +69,7 @@ globalkeys = awful.util.table.join(
     end),
     -- Show/Hide Wibox {{{2
     awful.key({ modkey }, "b", function ()
-    mywibox[mouse.screen].visible = not mywibox[mouse.screen].visible
+        mywibox[mouse.screen].visible = not mywibox[mouse.screen].visible
     end),
     -- Switch tag next/previous {{{2
     awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ),
