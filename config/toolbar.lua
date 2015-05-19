@@ -487,7 +487,7 @@ function getBatWidget()
         output = "DC "..remainingCharge
     -- UNKNOWN
     else
-        output = "DC ~"
+        output = "DC"
     end
     -- output =
     return output
