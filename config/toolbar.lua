@@ -493,11 +493,46 @@ function getBatWidget()
     return output
 end
 
+local batWidgetInfos = nil
+
+function batWidgetRemoveInfos()
+    if batWidgetInfos ~= nil then
+        naughty.destroy(batWidgetInfos)
+        batWidgetInfos = nil
+    end
+end
+
+function batWidgetAddInfos()
+    batWidgetRemoveInfos()
+    local capi = {
+        mouse = mouse,
+        screen = screen
+    }
+    local cal = awful.util.pread("sudo acpi -V | grep 'Battery'")
+    -- @TODO: Add better layout
+    batWidgetInfos = naughty.notify({
+        text = string.format(
+            '<span font_desc="%s">%s</span>',
+            "Terminus",
+            cal),
+        timeout = 0,
+        position = "top_right",
+        margin = 10,
+        height = 170,
+        width = 585,
+        screen = capi.mouse.screen
+    })
+end
+
 -- Bat 0
 baticon = wibox.widget.imagebox()
 baticon:set_image(beautiful.widget_batt)
 batwidget = wibox.widget.textbox()
 vicious.register( batwidget, getBatWidget, "$1", 1)
+
+-- BatWidget event listener {{{3
+batwidget:connect_signal('mouse::enter', function () batWidgetAddInfos() end)
+batwidget:connect_signal('mouse::leave', function () batWidgetRemoveInfos() end)
 
 -- Volume widget {{{1
 volicon = wibox.widget.imagebox()
