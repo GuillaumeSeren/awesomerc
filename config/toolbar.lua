@@ -431,6 +431,24 @@ function getBatTimerUntilFull(bats)
     return timeRemainingFull
 end
 
+function getEnergyRate(bats)
+    local energyRate = ''
+    for id, bat in ipairs(bats) do
+        -- Check if that bat is actually discharging
+        local status = batState(bat)
+        if status == 'Discharging' then
+            local energyRateCmd = io.popen("upower -i /org/freedesktop/UPower/devices/battery_"..bat.." | grep 'energy-rate:'| sed 's/^\\s\\+energy-rate:\\s\\+//g' | sed 's/\\(.*\\),.*\\sW/\\1 W/g'")
+            energyRate = energyRateCmd:read()
+            energyRateCmd:close()
+            output = energyRate
+        end
+    end
+    if output == nil then
+        output = ''
+    end
+    return output
+end
+
 -- Return the batWidget
 function getBatWidget()
     local bats = {}
@@ -456,7 +474,8 @@ function getBatWidget()
     if (pwsStatus == 0) then
         local remainingTime = getBatTimer(bats)
         local remainingCharge = getBatCharge(bats)
-        output= "- "..remainingCharge.." "..remainingTime
+        local energyRate = getEnergyRate(bats)
+        output= "- "..energyRate.." "..remainingTime
     -- CHARGING
     elseif (pwsStatus > 0 and globalBatState == 'Charging') then
         local remainingCharge = getBatCharge(bats)
