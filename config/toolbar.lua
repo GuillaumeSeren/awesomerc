@@ -312,171 +312,192 @@ tempwidget = wibox.widget.textbox()
 vicious.register(tempwidget, vicious.widgets.thermal, "<span color=\"#f1af5f\">$1°C</span>", 9, "thermal_zone0")
 
 -- Battery 1 widget {{{1
+
+-- Return the array of system bats
+function getSystemBats()
+    local bats = {}
+    local batsCmd = io.popen("ls /sys/class/power_supply | grep 'BAT'")
+    for bat in batsCmd:lines() do
+        table.insert(bats, bat)
+    end
+    batsCmd:close()
+    return bats
+end
+
+-- Return bat number
+function getBatNumber(bats)
+    local count = 0
+    for _ in pairs(bats) do count = count + 1 end
+    return count
+end
+
+-- Return the number of power sources
+function getPowerWallStatus()
+    local pwsFlag = 0
+    local pwsCmd = io.popen("cat /sys/class/power_supply/AC/online")
+    local pws = pwsCmd:read()
+    pwsCmd:close()
+    if pwsCmd == nil then
+        pws = ''
+    else
+        pwsFlag = pws
+    end
+    return pwsFlag
+end
+
+-- Return Battery state
+function batState(sBatId)
+    -- Load bat info
+    local bat = io.open("/sys/class/power_supply/"..sBatId.."/status", "r")
+    -- Read bat status
+    local batstate = bat:read("*line")
+    local output
+    -- Detect chargin / discharging
+    if (batstate == 'Discharging' or batstate == 'Charging') then
+        output = batstate
+    else
+        output = "Charged"
+    end
+    bat:close()
+    return output
+end
+
+-- Return a global state if multiple bat
+function getGlobalBatState(bats)
+    local status = ''
+    for id, bat in ipairs(bats) do
+        batStatus = batState(bat)
+        if (batStatus == 'Unknown' or batStatus == 'Charging') then
+            status = batStatus
+        end
+    end
+    return status
+end
+
+-- Return the charge %
+function getBatCharge(bats)
+    local chargeRemaining = ''
+    for id, bat in ipairs(bats) do
+        -- Check if that bat is actually discharging
+        local status = batState(bat)
+        if (status == 'Discharging' or status == 'Charging' or status == 'Charged') then
+            local chargeCmd = io.popen("upower -i /org/freedesktop/UPower/devices/battery_"..bat.." | grep 'percentage:'| sed 's/^\\s\\+percentage:\\s\\+//g'")
+            charge = chargeCmd:read()
+            chargeCmd:close()
+            chargeRemaining = charge
+        end
+    end
+    if chargeRemaining == nil then
+        chargeRemaining = ''
+    end
+    return chargeRemaining
+end
+
+-- Return the time lasting for a given bat
+function getBatTimer(bats)
+    local timeRemaining = ''
+    for id, bat in ipairs(bats) do
+        -- Check if that bat is actually discharging
+        local status = batState(bat)
+        if status == 'Discharging' then
+            local chargeCmd = io.popen("upower -i /org/freedesktop/UPower/devices/battery_"..bat.." | grep 'time to empty'| sed 's/^\\s\\+time to empty:\\s\\+//g' | sed 's/hours/h/g'")
+            charge = chargeCmd:read()
+            chargeCmd:close()
+            timeRemaining = charge
+        end
+    end
+    if timeRemaining == nil then
+        timeRemaining = ''
+    end
+    return timeRemaining
+end
+
+-- Return the time needed to be fully charged
+function getBatTimerUntilFull(bats)
+    local timeRemainingFull = ''
+    for id, bat in ipairs(bats) do
+        -- Check if that bat is actually discharging
+        local status = batState(bat)
+        if status == 'Charging' then
+            local chargeCmd = io.popen("upower -i /org/freedesktop/UPower/devices/battery_"..bat.." | grep 'time to full:'| sed 's/^\\s\\+time to full:\\s\\+//g' | sed 's/hours/h/g' | sed 's/minutes/m/g'")
+            charge = chargeCmd:read()
+            chargeCmd:close()
+            timeRemainingFull = charge
+        end
+    end
+    if timeRemainingFull == nil then
+        timeRemainingFull = ''
+    end
+    return timeRemainingFull
+end
+
+function getEnergyRate(bats)
+    local energyRate = ''
+    for id, bat in ipairs(bats) do
+        -- Check if that bat is actually discharging
+        local status = batState(bat)
+        if status == 'Discharging' then
+            local energyRateCmd = io.popen("upower -i /org/freedesktop/UPower/devices/battery_"..bat.." | grep 'energy-rate:'| sed 's/^\\s\\+energy-rate:\\s\\+//g' | sed 's/\\(.*\\),.*\\sW/\\1 W/g'")
+            energyRate = energyRateCmd:read()
+            energyRateCmd:close()
+            output = energyRate
+        end
+    end
+    if output == nil then
+        output = ''
+    end
+    return output
+end
+
+-- Return the batWidget
+function getBatWidget()
+    local bats = {}
+    -- User can define a target bat,
+    local userBat= nil
+    -- but usually it will be empty (auto-detect)
+    if userBat == nil then
+        bats = getSystemBats()
+    else
+        -- Add this to array bats
+        table.insert(bats, userBat)
+    end
+    -- Count bat
+    local batNumber = getBatNumber(bats)
+    -- Are we plugged in on the wall ?
+    local pwsStatus = tonumber(getPowerWallStatus())
+    -- Output setup
+    local output
+    -- Check if everything is charged / charging / discharging
+    local globalBatState = getGlobalBatState(bats)
+    -- 3 modes: DC / Charging / Discharging
+    -- NO POWER SOURCE
+    if (pwsStatus == 0) then
+        local remainingTime = getBatTimer(bats)
+        local remainingCharge = getBatCharge(bats)
+        local energyRate = getEnergyRate(bats)
+        output= "- "..energyRate.." "..remainingTime
+    -- CHARGING
+    elseif (pwsStatus > 0 and globalBatState == 'Charging') then
+        local remainingCharge = getBatCharge(bats)
+        local remainingTimeFull = getBatTimerUntilFull(bats)
+        output = "+ "..remainingCharge.." "..remainingTimeFull
+    -- Charged
+    elseif (pwsStatus > 0 and globalBatState == 'Charged') then
+        local remainingCharge = getBatCharge(bats)
+        output = "DC "..remainingCharge
+    -- UNKNOWN
+    else
+        output = "DC ~"
+    end
+    -- output =
+    return output
+end
+
+-- Bat 0
 baticon = wibox.widget.imagebox()
 baticon:set_image(beautiful.widget_batt)
 batwidget = wibox.widget.textbox()
-vicious.register( batwidget, vicious.widgets.bat, "$2", 10, "BAT0")
--- Battery 2 widget {{{1
-baticon = wibox.widget.imagebox()
-baticon:set_image(beautiful.widget_batt)
-batsecondwidget = wibox.widget.textbox()
-vicious.register( batsecondwidget, vicious.widgets.bat, "$2", 10, "BAT1")
-
--- Return Battery state
-function batstate(sBatId)
-    -- Load bat info
-    local bat = io.open("/sys/class/power_supply/"..sBatId.."/status", "r")
-    -- Test if null
-    if (bat == nil) then
-        return "Cable plugged"
-    end
-    -- Read bat status
-    local batstate = bat:read("*line")
-    bat:close()
-    -- Detect chargin / discharging
-    if (batstate == 'Discharging' or batstate == 'Charging') then
-        return batstate
-    else
-        return "Fully charged"
-    end
-end
-
--- @TODO: export this process to a function
-vicious.register(batwidget, vicious.widgets.bat, function (widget, args)
-    -- plugged
-    if (batstate("BAT0") == 'Cable plugged' or batstate("BAT0") == 'Unknown') then return "AC "
-        -- critical
-    elseif (args[2] <= 5 and batstate("BAT0") == 'Discharging') then
-        naughty.notify({
-            text = "Charge >= 5%, suspend now !",
-            title = "Charge > 5%",
-            position = "top_right",
-            timeout = 1,
-            fg="#000000",
-            bg="#ffffff",
-            screen = 1,
-            ontop = true,
-        })
-        -- low
-    elseif (args[2] <= 10 and batstate("BAT0") == 'Discharging') then
-        naughty.notify({
-            text = "Charge >= 10%, connect power !",
-            title = "Charge >= 10%",
-            position = "top_right",
-            timeout = 1,
-            fg="#ffffff",
-            bg="#262729",
-            screen = 1,
-            ontop = true,
-        })
-        -- quarter
-    elseif (args[2] == 25 and batstate("BAT0") == 'Discharging') then
-        naughty.notify({
-            text = "Charge = 25%",
-            title = "Charge = 25%",
-            position = "top_right",
-            timeout = 1,
-            fg="#000000",
-            bg="#ffffff",
-            screen = 1,
-            ontop = true,
-        })
-        -- half
-    elseif (args[2] == 50 and batstate("BAT0") == 'Discharging') then
-        naughty.notify({
-            text = "Charge = 50%",
-            title = "Charge = 50%",
-            position = "top_right",
-            timeout = 1,
-            fg="#ffffff",
-            bg="#262729",
-            screen = 1,
-            ontop = true,
-        })
-        -- 75%
-    elseif (args[2] == 75 and batstate("BAT0") == 'Discharging') then
-        naughty.notify({
-            text = "Charge = 75%",
-            title = "Charge = 75%",
-            position = "top_right",
-            timeout = 1,
-            fg="#000000",
-            bg="#ffffff",
-            screen = 1,
-            ontop = true,
-        })
-    end
-    return " " .. args[2] .. "%"
-end, 1, 'BAT0')
-
--- batwidget = wibox.widget.textbox()
-vicious.register(batsecondwidget, vicious.widgets.bat,
-function (widget, args)
-    -- plugged
-    if (batstate("BAT1") == 'Cable plugged' or batstate("BAT1") == 'Unknown') then return "AC "
-        -- critical
-    elseif (args[2] <= 5 and batstate("BAT1") == 'Discharging') then
-        naughty.notify({
-            text = "Charge >= 5%, suspend now !",
-            title = "Charge > 5%",
-            position = "top_right",
-            timeout = 1,
-            fg="#000000",
-            bg="#ffffff",
-            screen = 1,
-            ontop = true,
-        })
-        -- low
-    elseif (args[2] <= 10 and batstate("BAT1") == 'Discharging') then
-        naughty.notify({
-            text = "Charge >= 10%, connect power !",
-            title = "Charge >= 10%",
-            position = "top_right",
-            timeout = 1,
-            fg="#ffffff",
-            bg="#262729",
-            screen = 1,
-            ontop = true,
-        })
-        -- quarter
-    elseif (args[2] == 25 and batstate("BAT1") == 'Discharging') then
-        naughty.notify({
-            text = "Charge = 25%",
-            title = "Charge = 25%",
-            position = "top_right",
-            timeout = 1,
-            fg="#000000",
-            bg="#ffffff",
-            screen = 1,
-            ontop = true,
-        })
-        -- half
-    elseif (args[2] == 50 and batstate("BAT1") == 'Discharging') then
-        naughty.notify({
-            text = "Charge = 50%",
-            title = "Charge = 50%",
-            position = "top_right",
-            timeout = 1,
-            fg="#ffffff",
-            bg="#262729",
-            screen = 1,
-            ontop = true,
-        })
-        -- 75%
-    elseif (args[2] == 75 and batstate("BAT1") == 'Discharging') then
-        naughty.notify({
-            text = "Charge = 75%",
-            title = "Charge = 75%",
-            position = "top_right",
-            timeout = 1,
-            fg="#000000",
-            bg="#ffffff",
-            screen = 1,
-            ontop = true,
-        })
-    end
-    return " " .. args[2] .. "% "
-end, 1, 'BAT1')
+vicious.register( batwidget, getBatWidget, "$1", 1)
 
 -- Volume widget {{{1
 volicon = wibox.widget.imagebox()
@@ -752,8 +773,8 @@ for s = 1, screen.count() do
     right_layout:add(spacer)
     right_layout:add(baticon)
     right_layout:add(batwidget)
-    right_layout:add(spacer)
-    right_layout:add(batsecondwidget)
+    -- right_layout:add(spacer)
+    -- right_layout:add(batsecondwidget)
     right_layout:add(clockicon)
     right_layout:add(mytextclock)
     right_layout:add(mylayoutbox[s])
