@@ -387,6 +387,9 @@ function getBatCharge(bats)
             chargeRemaining = charge
         end
     end
+    if chargeRemaining == nil then
+        chargeRemaining = ''
+    end
     return chargeRemaining
 end
 
@@ -403,6 +406,9 @@ function getBatTimer(bats)
             timeRemaining = charge
         end
     end
+    if timeRemaining == nil then
+        timeRemaining = ''
+    end
     return timeRemaining
 end
 
@@ -418,6 +424,9 @@ function getBatTimerUntilFull(bats)
             chargeCmd:close()
             timeRemainingFull = charge
         end
+    end
+    if timeRemainingFull == nil then
+        timeRemainingFull = ''
     end
     return timeRemainingFull
 end
