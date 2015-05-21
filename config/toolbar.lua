@@ -770,8 +770,10 @@ for s = 1, screen.count() do
     -- Widgets that are aligned to the upper right {{{1
     local right_layout = wibox.layout.fixed.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
+    -- Rfkill is not required on desktop
     right_layout:add(spacer)
     right_layout:add(rfkillWidget)
+    -- Always
     right_layout:add(spacer)
     right_layout:add(netActiveInfo)
     right_layout:add(netdownicon)
@@ -782,12 +784,16 @@ for s = 1, screen.count() do
     right_layout:add(spacer)
     right_layout:add(pomodoroicon)
     right_layout:add(pomodoro.widget)
+    -- Mail can be hided if no mail on this system
     right_layout:add(spacer)
     right_layout:add(mailWidget)
+    -- Brightness can be hided if this setup is not laptop
     right_layout:add(spacer)
     right_layout:add(brightnessWidget)
+    -- Redshift can be disabled if not present
     right_layout:add(spacer)
     right_layout:add(redshiftWidget)
+    -- Always
     right_layout:add(spacer)
     right_layout:add(memicon)
     right_layout:add(memwidget)
@@ -805,11 +811,11 @@ for s = 1, screen.count() do
     right_layout:add(spacer)
     right_layout:add(volicon)
     right_layout:add(volumewidget)
+    -- BatWidget can be hided if no bat in the system
     right_layout:add(spacer)
     right_layout:add(baticon)
     right_layout:add(batwidget)
-    -- right_layout:add(spacer)
-    -- right_layout:add(batsecondwidget)
+    -- Always
     right_layout:add(clockicon)
     right_layout:add(mytextclock)
     right_layout:add(mylayoutbox[s])
