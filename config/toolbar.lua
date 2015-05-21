@@ -338,7 +338,7 @@ function getPowerWallStatus()
     local pws = pwsCmd:read()
     pwsCmd:close()
     if pwsCmd == nil then
-        pws = ''
+        pws = nil
     else
         pwsFlag = pws
     end
@@ -454,6 +454,10 @@ function getBatWidget()
     local bats = {}
     -- User can define a target bat,
     local userBat= nil
+    batWidgetObject = {}
+    -- Load 1 launch value
+    batWidgetObject["icon"] = nil
+    batWidgetObject["widget"] = nil
     -- but usually it will be empty (auto-detect)
     if userBat == nil then
         bats = getSystemBats()
@@ -475,21 +479,28 @@ function getBatWidget()
         local remainingTime = getBatTimer(bats)
         local remainingCharge = getBatCharge(bats)
         local energyRate = getEnergyRate(bats)
+        batWidgetObject["icon"] = 1
         output= "- "..energyRate.." "..remainingTime
     -- CHARGING
     elseif (pwsStatus > 0 and globalBatState == 'Charging') then
         local remainingCharge = getBatCharge(bats)
         local remainingTimeFull = getBatTimerUntilFull(bats)
+        batWidgetObject["icon"] = 1
         output = "+ "..remainingCharge.." "..remainingTimeFull
     -- Charged
     elseif (pwsStatus > 0 and globalBatState == 'Charged') then
         local remainingCharge = getBatCharge(bats)
+        batWidgetObject["icon"] = 1
         output = "DC "..remainingCharge
     -- UNKNOWN
     else
         output = "DC"
     end
     -- output =
+    batWidgetObject["widget"] = output
+    if right_layout ~= nil then
+        right_layout:reset()
+    end
     return output
 end
 
@@ -524,9 +535,21 @@ function batWidgetAddInfos()
     })
 end
 
+local batWidgetIcon=1
+
+function setBatWidgetIcon(value)
+    batWidgetIcon = value
+end
+
+function getBatWidgetIcon()
+    return batWidgetIcon
+end
+
+
 -- Bat 0
 baticon = wibox.widget.imagebox()
 baticon:set_image(beautiful.widget_batt)
+
 batwidget = wibox.widget.textbox()
 vicious.register( batwidget, getBatWidget, "$1", 1)
 
@@ -770,8 +793,10 @@ for s = 1, screen.count() do
     -- Widgets that are aligned to the upper right {{{1
     local right_layout = wibox.layout.fixed.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
+    -- Rfkill is not required on desktop
     right_layout:add(spacer)
     right_layout:add(rfkillWidget)
+    -- Always
     right_layout:add(spacer)
     right_layout:add(netActiveInfo)
     right_layout:add(netdownicon)
@@ -782,12 +807,16 @@ for s = 1, screen.count() do
     right_layout:add(spacer)
     right_layout:add(pomodoroicon)
     right_layout:add(pomodoro.widget)
+    -- Mail can be hided if no mail on this system
     right_layout:add(spacer)
     right_layout:add(mailWidget)
+    -- Brightness can be hided if this setup is not laptop
     right_layout:add(spacer)
     right_layout:add(brightnessWidget)
+    -- Redshift can be disabled if not present
     right_layout:add(spacer)
     right_layout:add(redshiftWidget)
+    -- Always
     right_layout:add(spacer)
     right_layout:add(memicon)
     right_layout:add(memwidget)
@@ -805,11 +834,18 @@ for s = 1, screen.count() do
     right_layout:add(spacer)
     right_layout:add(volicon)
     right_layout:add(volumewidget)
-    right_layout:add(spacer)
-    right_layout:add(baticon)
-    right_layout:add(batwidget)
-    -- right_layout:add(spacer)
-    -- right_layout:add(batsecondwidget)
+    -- BatWidget can be hided if no bat in the system
+        if batWidgetObject.icon ~= nil and batWidgetObject.widget ~=nil then
+            right_layout:add(spacer)
+            right_layout:add(baticon)
+            right_layout:add(batwidget)
+        elseif batWidgetObject.icon == nil and batWidgetObject.widget ~=nil then
+            right_layout:add(spacer)
+            -- Keep the bat Icon just hide it later
+            right_layout:add(baticon)
+            right_layout:add(batwidget)
+        end
+    -- Always
     right_layout:add(clockicon)
     right_layout:add(mytextclock)
     right_layout:add(mylayoutbox[s])
