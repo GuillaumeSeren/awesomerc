@@ -343,7 +343,7 @@ function getRedshiftWidgetValid()
     return output
 end
 
-if getRedshiftStatus() ~= nil then
+if getRedshiftWidgetValid() ~= nil then
     redshiftWidget = wibox.widget.textbox()
     vicious.register(redshiftWidget, getRedshiftStatus, "$1%", 1)
 end
@@ -862,7 +862,7 @@ for s = 1, screen.count() do
     -- Brightness can be hided if this setup is not laptop
     right_layout:add(spacer)
     right_layout:add(brightnessWidget)
-    if getRedshiftStatus() ~= nil then
+    if getRedshiftWidgetValid() ~= nil then
         alert('redshiftWidgetValid', 'RedshiftWidget is started')
         -- Redshift can be disabled if not present
         right_layout:add(spacer)
