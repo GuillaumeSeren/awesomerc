@@ -343,7 +343,7 @@ function getRedshiftWidgetValid()
     return output
 end
 
-if getRedshiftStatus() ~= nil then
+if getRedshiftWidgetValid() ~= nil then
     redshiftWidget = wibox.widget.textbox()
     vicious.register(redshiftWidget, getRedshiftStatus, "$1%", 1)
 end
@@ -591,17 +591,29 @@ function getBatWidgetIcon()
     return batWidgetIcon
 end
 
+function getBatWidgetValid()
+    local output = nil
+    local batNumberCmd = io.popen("ls /sys/class/power_supply | grep 'BAT'")
+    local batNumberValue = batNumberCmd:read()
+    batNumberCmd:close()
+    if batNumberValue ~= 0 then
+        output = batNumberValue
+    end
+    return output
+end
 
 -- Bat 0
 baticon = wibox.widget.imagebox()
 baticon:set_image(beautiful.widget_batt)
 
-batwidget = wibox.widget.textbox()
-vicious.register( batwidget, getBatWidget, "$1", 1)
+if getBatWidgetValid() ~= nil then
+    batwidget = wibox.widget.textbox()
+    vicious.register( batwidget, getBatWidget, "$1", 1)
 
--- BatWidget event listener {{{3
-batwidget:connect_signal('mouse::enter', function () batWidgetAddInfos() end)
-batwidget:connect_signal('mouse::leave', function () batWidgetRemoveInfos() end)
+    -- BatWidget event listener {{{3
+    batwidget:connect_signal('mouse::enter', function () batWidgetAddInfos() end)
+    batwidget:connect_signal('mouse::leave', function () batWidgetRemoveInfos() end)
+end
 
 -- Volume widget {{{1
 volicon = wibox.widget.imagebox()
@@ -687,20 +699,23 @@ netupicon.align = "middle"
 netupinfo = wibox.widget.textbox()
 vicious.register(netupinfo, vicious.widgets.net, netInterfaceActiveDecoratedUp(netupinfo, args), 1)
 
--- RfKill widget {{{1
-function getRfkillWidget(widget, args)
-    -- Here the rfkillWidget is not reachable
-    local rfkillWidget = require("bundle.awesome-rfkill")
-    local widget = rfkillWidget.getRfkillBlockedState()
-    return red .. widget ..coldef
+rfkillWidgetLib = require("bundle.awesome-rfkill")
+if rfkillWidgetLib.getRfkillWidgetValid() ~= nil then
+    -- RfKill widget {{{1
+    function getRfkillWidget(widget, args)
+        local rfkillWidget = require("bundle.awesome-rfkill")
+        -- Here the rfkillWidget is not reachable
+        local widget = rfkillWidget.getRfkillBlockedState()
+        return red .. widget ..coldef
+    end
+    
+    rfkillWidget = wibox.widget.textbox()
+    vicious.register(rfkillWidget, getRfkillWidget, "$1%", 1)
+    
+    -- Mouse event listener
+    rfkillWidget:connect_signal('mouse::enter', function () rfkillTooltipAdd() end)
+    rfkillWidget:connect_signal('mouse::leave', function () rfkillTooltipRemove() end)
 end
-
-rfkillWidget = wibox.widget.textbox()
-vicious.register(rfkillWidget, getRfkillWidget, "$1%", 1)
-
--- Mouse event listener
-rfkillWidget:connect_signal('mouse::enter', function () rfkillTooltipAdd() end)
-rfkillWidget:connect_signal('mouse::leave', function () rfkillTooltipRemove() end)
 
 -- Memory widget {{{1
 memicon = wibox.widget.imagebox()
@@ -839,9 +854,13 @@ for s = 1, screen.count() do
     -- Widgets that are aligned to the upper right {{{1
     local right_layout = wibox.layout.fixed.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
-    -- Rfkill is not required on desktop
-    right_layout:add(spacer)
-    right_layout:add(rfkillWidget)
+    local rfkillWidgetLib = require("bundle.awesome-rfkill")
+    if rfkillWidgetLib.getRfkillWidgetValid() ~= nil then
+        alert('rfkillWidgetValid', 'RfkillWidget is started')
+        -- Rfkill is not required on desktop
+        right_layout:add(spacer)
+        right_layout:add(rfkillWidget)
+    end
     -- Always
     right_layout:add(spacer)
     right_layout:add(netActiveInfo)
@@ -862,7 +881,7 @@ for s = 1, screen.count() do
     -- Brightness can be hided if this setup is not laptop
     right_layout:add(spacer)
     right_layout:add(brightnessWidget)
-    if getRedshiftStatus() ~= nil then
+    if getRedshiftWidgetValid() ~= nil then
         alert('redshiftWidgetValid', 'RedshiftWidget is started')
         -- Redshift can be disabled if not present
         right_layout:add(spacer)
@@ -887,6 +906,9 @@ for s = 1, screen.count() do
     right_layout:add(volicon)
     right_layout:add(volumewidget)
     -- BatWidget can be hided if no bat in the system
+    if getBatWidgetValid() ~= nil then
+        alert('batWidgetValid', 'BatWidget is started')
+        -- Redshift can be disabled if not present
         if batWidgetObject.icon ~= nil and batWidgetObject.widget ~=nil then
             right_layout:add(spacer)
             right_layout:add(baticon)
@@ -897,6 +919,7 @@ for s = 1, screen.count() do
             right_layout:add(baticon)
             right_layout:add(batwidget)
         end
+    end
     -- Always
     right_layout:add(clockicon)
     right_layout:add(mytextclock)
