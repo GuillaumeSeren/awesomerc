@@ -699,20 +699,23 @@ netupicon.align = "middle"
 netupinfo = wibox.widget.textbox()
 vicious.register(netupinfo, vicious.widgets.net, netInterfaceActiveDecoratedUp(netupinfo, args), 1)
 
--- RfKill widget {{{1
-function getRfkillWidget(widget, args)
-    -- Here the rfkillWidget is not reachable
-    local rfkillWidget = require("bundle.awesome-rfkill")
-    local widget = rfkillWidget.getRfkillBlockedState()
-    return red .. widget ..coldef
+rfkillWidgetLib = require("bundle.awesome-rfkill")
+if rfkillWidgetLib.getRfkillWidgetValid() ~= nil then
+    -- RfKill widget {{{1
+    function getRfkillWidget(widget, args)
+        local rfkillWidget = require("bundle.awesome-rfkill")
+        -- Here the rfkillWidget is not reachable
+        local widget = rfkillWidget.getRfkillBlockedState()
+        return red .. widget ..coldef
+    end
+    
+    rfkillWidget = wibox.widget.textbox()
+    vicious.register(rfkillWidget, getRfkillWidget, "$1%", 1)
+    
+    -- Mouse event listener
+    rfkillWidget:connect_signal('mouse::enter', function () rfkillTooltipAdd() end)
+    rfkillWidget:connect_signal('mouse::leave', function () rfkillTooltipRemove() end)
 end
-
-rfkillWidget = wibox.widget.textbox()
-vicious.register(rfkillWidget, getRfkillWidget, "$1%", 1)
-
--- Mouse event listener
-rfkillWidget:connect_signal('mouse::enter', function () rfkillTooltipAdd() end)
-rfkillWidget:connect_signal('mouse::leave', function () rfkillTooltipRemove() end)
 
 -- Memory widget {{{1
 memicon = wibox.widget.imagebox()
@@ -851,9 +854,13 @@ for s = 1, screen.count() do
     -- Widgets that are aligned to the upper right {{{1
     local right_layout = wibox.layout.fixed.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
-    -- Rfkill is not required on desktop
-    right_layout:add(spacer)
-    right_layout:add(rfkillWidget)
+    local rfkillWidgetLib = require("bundle.awesome-rfkill")
+    if rfkillWidgetLib.getRfkillWidgetValid() ~= nil then
+        alert('rfkillWidgetValid', 'RfkillWidget is started')
+        -- Rfkill is not required on desktop
+        right_layout:add(spacer)
+        right_layout:add(rfkillWidget)
+    end
     -- Always
     right_layout:add(spacer)
     right_layout:add(netActiveInfo)
