@@ -591,17 +591,29 @@ function getBatWidgetIcon()
     return batWidgetIcon
 end
 
+function getBatWidgetValid()
+    local output = nil
+    local batNumberCmd = io.popen("ls /sys/class/power_supply | grep 'BAT'")
+    local batNumberValue = batNumberCmd:read()
+    batNumberCmd:close()
+    if batNumberValue ~= 0 then
+        output = batNumberValue
+    end
+    return output
+end
 
 -- Bat 0
 baticon = wibox.widget.imagebox()
 baticon:set_image(beautiful.widget_batt)
 
-batwidget = wibox.widget.textbox()
-vicious.register( batwidget, getBatWidget, "$1", 1)
+if getBatWidgetValid() ~= nil then
+    batwidget = wibox.widget.textbox()
+    vicious.register( batwidget, getBatWidget, "$1", 1)
 
--- BatWidget event listener {{{3
-batwidget:connect_signal('mouse::enter', function () batWidgetAddInfos() end)
-batwidget:connect_signal('mouse::leave', function () batWidgetRemoveInfos() end)
+    -- BatWidget event listener {{{3
+    batwidget:connect_signal('mouse::enter', function () batWidgetAddInfos() end)
+    batwidget:connect_signal('mouse::leave', function () batWidgetRemoveInfos() end)
+end
 
 -- Volume widget {{{1
 volicon = wibox.widget.imagebox()
@@ -887,6 +899,9 @@ for s = 1, screen.count() do
     right_layout:add(volicon)
     right_layout:add(volumewidget)
     -- BatWidget can be hided if no bat in the system
+    if getBatWidgetValid() ~= nil then
+        alert('batWidgetValid', 'BatWidget is started')
+        -- Redshift can be disabled if not present
         if batWidgetObject.icon ~= nil and batWidgetObject.widget ~=nil then
             right_layout:add(spacer)
             right_layout:add(baticon)
@@ -897,6 +912,7 @@ for s = 1, screen.count() do
             right_layout:add(baticon)
             right_layout:add(batwidget)
         end
+    end
     -- Always
     right_layout:add(clockicon)
     right_layout:add(mytextclock)
