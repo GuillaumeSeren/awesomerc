@@ -242,6 +242,33 @@ cpuicon:buttons(awful.util.table.join(awful.button({ }, 1, function () awful.uti
 
 -- MAIL widget {{{1
 
+-- Return the mailWidget
+function getMailWidget()
+    -- output
+    local output = nil
+    -- Test dependencies
+    local mailWidgetValid = getMailWidgetValid()
+    if mailWidgetValid ~= nil then
+        output = mailStatus()
+    else
+        output = mailWidgetValid
+    end
+    return output
+end
+
+-- Check if the dependencies needed by mailWidget is here
+function getMailWidgetValid()
+    -- We need notmuch command
+    local output = nil
+    local notmuchStatusCmd = os.execute("which notmuch")
+    if notmuchStatusCmd ~= 0 then
+        output = nil
+    else
+        output = notmuchStatusCmd
+    end
+    return output
+end
+
 -- Return mail icon & status
 function mailStatus()
     local mailStatusCmd = io.popen("notmuch count INBOX")
@@ -255,8 +282,12 @@ function mailStatus()
     end
     return blue .. output .. coldef
 end
-mailWidget = wibox.widget.textbox()
-vicious.register(mailWidget, mailStatus, "$1%", 1)
+
+-- Do not launch it if missing dependencies
+if getMailWidgetValid() ~= nil then
+    mailWidget = wibox.widget.textbox()
+    vicious.register(mailWidget, getMailWidget, "$1%", 1)
+end
 
 -- Brightness widget {{{1
 function getScreenBrightness()
@@ -299,8 +330,23 @@ function getRedshiftStatus()
     return red .. output .. coldef
 end
 
-redshiftWidget = wibox.widget.textbox()
-vicious.register(redshiftWidget, getRedshiftStatus, "$1%", 1)
+-- Check if the dependencies needed by redshift is here
+function getRedshiftWidgetValid()
+    -- We need notmuch command
+    local output = nil
+    local redshiftStatusCmd = os.execute("redshift -p")
+    if redshiftStatusCmd ~= 0 then
+        output = nil
+    else
+        output = redshiftStatusCmd
+    end
+    return output
+end
+
+if getRedshiftStatus() ~= nil then
+    redshiftWidget = wibox.widget.textbox()
+    vicious.register(redshiftWidget, getRedshiftStatus, "$1%", 1)
+end
 
 -- Temp widget {{{1
 tempicon = wibox.widget.imagebox()
@@ -808,14 +854,20 @@ for s = 1, screen.count() do
     right_layout:add(pomodoroicon)
     right_layout:add(pomodoro.widget)
     -- Mail can be hided if no mail on this system
-    right_layout:add(spacer)
-    right_layout:add(mailWidget)
+    if getMailWidgetValid() ~= nil then
+        alert('mailWidgetValid', 'MailWidget is started')
+        right_layout:add(spacer)
+        right_layout:add(mailWidget)
+    end
     -- Brightness can be hided if this setup is not laptop
     right_layout:add(spacer)
     right_layout:add(brightnessWidget)
-    -- Redshift can be disabled if not present
-    right_layout:add(spacer)
-    right_layout:add(redshiftWidget)
+    if getRedshiftStatus() ~= nil then
+        alert('redshiftWidgetValid', 'RedshiftWidget is started')
+        -- Redshift can be disabled if not present
+        right_layout:add(spacer)
+        right_layout:add(redshiftWidget)
+    end
     -- Always
     right_layout:add(spacer)
     right_layout:add(memicon)
