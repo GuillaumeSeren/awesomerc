@@ -20,7 +20,11 @@ So I try to also do it on my WM:
 - Disable non-working module, to help portability by adding a check function.
 
 ## Toolbar
-Actually on my toolbar:
+For widget that require things that are not on all my computer,
+I add a function to detect if the prerequisites are here and if not,
+disable (not add in the toolbar) the given widget.
+
+Here the list of available modules:
 * RfkillWidget:     Display the state of the rfkill switch.
 * NetWidget:        Display the network status, auto switch on active interface.
 * PomodoroWidget:   Display a Pomodoro timer and count done run this session.
