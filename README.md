@@ -41,6 +41,15 @@ Here the list of available modules:
 * DateWidget:       Display the date.
 * TimeWidget:       Display the current time.
 
+## Install
+Install is simple :
+    # Clone the git tree
+    git clone https://github.com/GuillaumeSeren/awesomerc ~/.config/awesome
+    # Go to the profile directory
+    cd ~/.config/awesome
+    # Pull all the submodule
+    git submodule foreach --recursive git submodule update --init
+
 ## Participate !
 If you find it useful, and would like to add your tips and tricks in it,
 feel free to fork this project and fill a __Pull Request__.
