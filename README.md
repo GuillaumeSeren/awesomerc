@@ -5,26 +5,37 @@ This is my configuration setup for the Awesome Tiling Wm.
 
 ## IDEAS
 I like the concept of tiling WM, and use it happily since a few years,
-and Awesome is fast, efficient and straightforward.
+and Awesome is fast, customisable and got a big community to find help.
 
 I also really endorse UNIX phylosophy: «Make each program do one thing well.»
 see : http://www.faqs.org/docs/artu/ch01s06.html
 
+Then I try to keep each module in their own git tree, for that purpose,
+I use git submodule and add them in a bundle directory.
+
 ## Features
 So I try to also do it on my WM:
-- Keep clear configuration around each need of the config.
-- Keep every module in the bundle directory, big fan of NeoBundle https://github.com/Shougo/neobundle.vim
+- Keep clear configuration around each need of the config in different files idea taken from https://github.com/vincentbernat/awesome-configuration.
+- Keep every module in a submodule in the bundle directory, big fan of NeoBundle https://github.com/Shougo/neobundle.vim
+- Disable non-working module, to help portability by adding a check function.
 
 ## Toolbar
 Actually on my toolbar:
-* NetWidget:   Display the network status, auto switch on active interface.
-* MemWidget:   Display the memory usage.
-* CpuWidget:   Display the load of the CPU.
-* TempWidget:  Display temp information.
-* SoundWidget: Display the sound level (PulseAudio support).
-* BatWidget:   Display the information of available bat of the system.
-* DateWidget:  Display the date.
-* TimeWidget:  Display the current time.
+* RfkillWidget:     Display the state of the rfkill switch.
+* NetWidget:        Display the network status, auto switch on active interface.
+* PomodoroWidget:   Display a Pomodoro timer and count done run this session.
+* MailWidget:       Display the INBOX unread messages by using notmuch.
+* ScreenWidget:     Display the brightness of the screen.
+* RedshiftWidget:   Display the redshift setup actually.
+* MemWidget:        Display the memory usage.
+* CpuGraph:         Display the CPU graph usage.
+* CpuWidget:        Display the load of the CPU.
+* FsWidget:         Display the space usage in the system.
+* TempWidget:       Display temp information.
+* SoundWidget:      Display the sound level (PulseAudio support).
+* BatWidget:        Display the information of available bat of the system.
+* DateWidget:       Display the date.
+* TimeWidget:       Display the current time.
 
 ## Participate !
 If you find it useful, and would like to add your tips and tricks in it,
