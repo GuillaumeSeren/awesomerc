@@ -26,6 +26,27 @@ brown       = "<span color='#db842f'>"
 fuchsia     = "<span color='#800080'>"
 gold        = "<span color='#e7b400'>"
 
+-- KeyBoard Widget {{{1
+
+function getActiveKeyboard()
+    local activeKeyboardCmd = io.popen("setxkbmap -query | grep 'variant' | sed 's/^variant:[[:space:]]*\\(.*\\)/\\1/g'")
+    local activeKeyboardValue = activeKeyboardCmd:read()
+    activeKeyboardCmd:close()
+    local output='keyboard'
+    if activeKeyboardValue ~= nil then
+        output = activeKeyboardValue
+    end
+    return output
+end
+
+function getListKeyboard()
+    local listKeyboard = {}
+    listKeyboard['bepo'] = 'fr bepo'
+    return listKeyboard
+end
+
+keyboardWidget = wibox.widget.textbox()
+vicious.register(keyboardWidget, getActiveKeyboard, "$1%", 1)
 -- Textclock widget {{{1
 clockicon = wibox.widget.imagebox()
 clockicon:set_image(beautiful.widget_clock)
@@ -855,6 +876,8 @@ for s = 1, screen.count() do
     local right_layout = wibox.layout.fixed.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
     local rfkillWidgetLib = require("bundle.awesome-rfkill")
+    right_layout:add(spacer)
+    right_layout:add(keyboardWidget)
     if rfkillWidgetLib.getRfkillWidgetValid() ~= nil then
         alert('rfkillWidgetValid', 'RfkillWidget is started')
         -- Rfkill is not required on desktop
