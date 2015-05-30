@@ -126,7 +126,7 @@ globalkeys = awful.util.table.join(
 
     -- Lock session {{{2
     awful.key({}, "XF86ScreenSaver", function ()
-            awful.util.spawn("i3lock -e -c 000000")
+            awful.util.spawn("i3lock -e -f -c 000000")
         end),
     -- Dropdown terminal {{{2
     awful.key({ modkey,	          }, "z",
