@@ -45,8 +45,46 @@ function getListKeyboard()
     return listKeyboard
 end
 
+-- Do not launch it if missing dependencies
 keyboardWidget = wibox.widget.textbox()
 vicious.register(keyboardWidget, getActiveKeyboard, "$1%", 1)
+
+local keyboardWidgetPopup = nil
+
+function keyboardWidgetRemoveInfos()
+    if keyboardWidgetPopup ~= nil then
+        naughty.destroy(keyboardWidgetPopup)
+        keyboardWidgetPopup = nil
+        -- offset = 0
+    end
+end
+
+function keyboardWidgetAddInfos()
+    keyboardWidgetRemoveInfos()
+    local capi = {
+        mouse = mouse,
+        screen = screen
+    }
+    -- @TODO: Add better content
+    local cal = 'Active layout: '..getActiveKeyboard()
+    -- @TODO: Add better layout
+    keyboardWidgetPopup = naughty.notify({
+        text = string.format(
+            '<span font_desc="%s">%s</span>',
+            "Terminus",
+            cal),
+        timeout = 0,
+        position = "top_right",
+        margin = 10,
+        height = 170,
+        width = 585,
+        screen = capi.mouse.screen
+    })
+end
+
+keyboardWidget:connect_signal('mouse::enter', function () keyboardWidgetAddInfos() end)
+keyboardWidget:connect_signal('mouse::leave', keyboardWidgetRemoveInfos)
+
 -- Textclock widget {{{1
 clockicon = wibox.widget.imagebox()
 clockicon:set_image(beautiful.widget_clock)
