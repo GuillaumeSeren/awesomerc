@@ -27,8 +27,15 @@ fuchsia     = "<span color='#800080'>"
 gold        = "<span color='#e7b400'>"
 
 -- KeyBoard Widget {{{1
+keyboardWidget={}
 
-function getActiveKeyboard()
+function keyboardWidget.getListKeyboard()
+    local listKeyboard = {}
+    listKeyboard['bepo'] = 'fr bepo'
+    return listKeyboard
+end
+
+function keyboardWidget.getActiveKeyboard()
     local activeKeyboardCmd = io.popen("setxkbmap -query | grep 'variant' | sed 's/^variant:[[:space:]]*\\(.*\\)/\\1/g'")
     local activeKeyboardValue = activeKeyboardCmd:read()
     activeKeyboardCmd:close()
@@ -39,36 +46,28 @@ function getActiveKeyboard()
     return output
 end
 
-function getListKeyboard()
-    local listKeyboard = {}
-    listKeyboard['bepo'] = 'fr bepo'
-    return listKeyboard
-end
 
--- Do not launch it if missing dependencies
-keyboardWidget = wibox.widget.textbox()
-vicious.register(keyboardWidget, getActiveKeyboard, "$1%", 1)
+-- Popup
+keyboardWidget.popup = nil
 
-local keyboardWidgetPopup = nil
-
-function keyboardWidgetRemoveInfos()
-    if keyboardWidgetPopup ~= nil then
-        naughty.destroy(keyboardWidgetPopup)
-        keyboardWidgetPopup = nil
+function keyboardWidget.popupRemoveInfos()
+    if keyboardWidget.popup ~= nil then
+        naughty.destroy(keyboardWidget.popup)
+        keyboardWidget.popup = nil
         -- offset = 0
     end
 end
 
-function keyboardWidgetAddInfos()
-    keyboardWidgetRemoveInfos()
+function keyboardWidget.popupAddInfos()
+    keyboardWidget.popupRemoveInfos()
     local capi = {
         mouse = mouse,
         screen = screen
     }
     -- @TODO: Add better content
-    local cal = 'Active layout: '..getActiveKeyboard()
+    local cal = 'Active layout: '..keyboardWidget.getActiveKeyboard()
     -- @TODO: Add better layout
-    keyboardWidgetPopup = naughty.notify({
+    keyboardWidget.popup = naughty.notify({
         text = string.format(
             '<span font_desc="%s">%s</span>',
             "Terminus",
@@ -82,8 +81,12 @@ function keyboardWidgetAddInfos()
     })
 end
 
-keyboardWidget:connect_signal('mouse::enter', function () keyboardWidgetAddInfos() end)
-keyboardWidget:connect_signal('mouse::leave', keyboardWidgetRemoveInfos)
+-- Do not launch it if missing dependencies
+keyboardWidget.widget = wibox.widget.textbox()
+vicious.register(keyboardWidget.widget, keyboardWidget.getActiveKeyboard, "$1%", 1)
+
+keyboardWidget.widget:connect_signal('mouse::enter', function () keyboardWidget.popupAddInfos() end)
+keyboardWidget.widget:connect_signal('mouse::leave', keyboardWidget.popupRemoveInfos)
 
 -- Textclock widget {{{1
 clockicon = wibox.widget.imagebox()
@@ -915,7 +918,7 @@ for s = 1, screen.count() do
     if s == 1 then right_layout:add(wibox.widget.systray()) end
     local rfkillWidgetLib = require("bundle.awesome-rfkill")
     right_layout:add(spacer)
-    right_layout:add(keyboardWidget)
+    right_layout:add(keyboardWidget.widget)
     if rfkillWidgetLib.getRfkillWidgetValid() ~= nil then
         alert('rfkillWidgetValid', 'RfkillWidget is started')
         -- Rfkill is not required on desktop
