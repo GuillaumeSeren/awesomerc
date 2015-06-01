@@ -27,8 +27,20 @@ fuchsia     = "<span color='#800080'>"
 gold        = "<span color='#e7b400'>"
 
 -- KeyBoard Widget {{{1
+keyboardWidget={}
 
-function getActiveKeyboard()
+-- Return the layout available {{{2
+-- @TODO: Let the user configure his list
+function keyboardWidget.getListKeyboard()
+    local listKeyboard = {}
+    listKeyboard['bepo']   = 'fr bepo'
+    listKeyboard['azerty'] = 'fr'
+    listKeyboard['qwerty'] = 'us'
+    return listKeyboard
+end
+
+-- Return the active layout in the system {{{2
+function keyboardWidget.getActiveKeyboard()
     local activeKeyboardCmd = io.popen("setxkbmap -query | grep 'variant' | sed 's/^variant:[[:space:]]*\\(.*\\)/\\1/g'")
     local activeKeyboardValue = activeKeyboardCmd:read()
     activeKeyboardCmd:close()
@@ -39,14 +51,120 @@ function getActiveKeyboard()
     return output
 end
 
-function getListKeyboard()
-    local listKeyboard = {}
-    listKeyboard['bepo'] = 'fr bepo'
-    return listKeyboard
+-- }}}
+-- Popup
+keyboardWidget.popup = nil
+-- Delete the tooltip {{{2
+function keyboardWidget.popupRemoveInfos()
+    if keyboardWidget.popup ~= nil then
+        naughty.destroy(keyboardWidget.popup)
+        keyboardWidget.popup = nil
+    end
 end
 
-keyboardWidget = wibox.widget.textbox()
-vicious.register(keyboardWidget, getActiveKeyboard, "$1%", 1)
+-- Return the nextLayout {{{2
+function keyboardWidget.getNextLayout(activeKeyboard, listKeyboards)
+    local activeKeyboardId = nil
+    local nextKeyboardId = nil
+    local nextKeyboardKey = nil
+    if activeKeyboard ~= nil and listKeyboards ~= nil then
+        -- Get the key list
+        local keys = keyboardWidget.getKeys(listKeyboards)
+        for i, v in ipairs(keys) do
+            if v == activeKeyboard then
+                activeKeyboardId = i
+            end
+        end
+        -- Validate if we are not on the last item
+        if keys[activeKeyboardId+1] ~= nil then
+            nextKeyboardId = activeKeyboardId+1
+        else
+            nextKeyboardId = 1
+        end
+        -- Resolve id to key
+        nextKeyboardKey = keys[nextKeyboardId]
+    end
+    return nextKeyboardKey
+end
+
+-- Return the prev layout {{{2
+function keyboardWidget.getPrevLayout(activeKeyboard, listKeyboards)
+    local activeKeyboardId = nil
+    local prevKeyboardId = nil
+    local prevKeyboardKey = nil
+    if activeKeyboard ~= nil and listKeyboards ~= nil then
+        -- Get the key list
+        local keys = keyboardWidget.getKeys(listKeyboards)
+        for i, v in ipairs(keys) do
+            if v == activeKeyboard then
+                activeKeyboardId = i
+            end
+            keysLastId = i
+        end
+        -- Validate if we are not on the first item
+        if keys[activeKeyboardId-1] ~= nil then
+            prevKeyboardId = activeKeyboardId-1
+        else
+            prevKeyboardId = keysLastId
+        end
+        -- Resolve id to key
+        prevKeyboardKey = keys[prevKeyboardId]
+    end
+    return prevKeyboardKey
+end
+
+-- Return the keys of a key/value array {{{2
+function keyboardWidget.getKeys(array)
+    -- local output (array)
+    local output = {}
+    for k,v in pairs(array) do
+        table.insert(output, k)
+    end
+    return output
+end
+
+-- Add the tooltip {{{2
+function keyboardWidget.popupAddInfos()
+    keyboardWidget.popupRemoveInfos()
+    local capi = {
+        mouse = mouse,
+        screen = screen
+    }
+    local layoutActive = keyboardWidget.getActiveKeyboard()
+    local layoutList = keyboardWidget.getListKeyboard()
+    local layoutNext = keyboardWidget.getNextLayout(layoutActive, layoutList)
+    local layoutPrev = keyboardWidget.getPrevLayout(layoutActive, layoutList)
+    local content = 'Active layout :: '..layoutActive..'\n'
+    content = content .. 'Next layout >> '..layoutNext..'\n'
+    content = content .. 'Prev layout << '..layoutPrev..'\n'
+    -- @TODO: Add better layout
+    keyboardWidget.popup = naughty.notify({
+        text = string.format(
+            '<span font_desc="%s">%s</span>',
+            "Terminus",
+            content),
+        timeout = 0,
+        position = "top_right",
+        margin = 10,
+        height = 170,
+        width = 585,
+        screen = capi.mouse.screen
+    })
+end
+
+-- }}}
+-- Do not launch it if missing dependencies
+keyboardWidget.widget = wibox.widget.textbox()
+vicious.register(keyboardWidget.widget, keyboardWidget.getActiveKeyboard, "$1%", 1)
+
+keyboardWidget.widget:connect_signal('mouse::enter', function () keyboardWidget.popupAddInfos() end)
+keyboardWidget.widget:connect_signal('mouse::leave', keyboardWidget.popupRemoveInfos)
+-- 
+-- keyboardWidget.widget:buttons(util.table.join(
+--     awful.button({ }, 1, function() show(-1) end),
+--     awful.button({ }, 3, function() show(1) end)
+-- ))
+
 -- Textclock widget {{{1
 clockicon = wibox.widget.imagebox()
 clockicon:set_image(beautiful.widget_clock)
@@ -877,7 +995,7 @@ for s = 1, screen.count() do
     if s == 1 then right_layout:add(wibox.widget.systray()) end
     local rfkillWidgetLib = require("bundle.awesome-rfkill")
     right_layout:add(spacer)
-    right_layout:add(keyboardWidget)
+    right_layout:add(keyboardWidget.widget)
     if rfkillWidgetLib.getRfkillWidgetValid() ~= nil then
         alert('rfkillWidgetValid', 'RfkillWidget is started')
         -- Rfkill is not required on desktop
