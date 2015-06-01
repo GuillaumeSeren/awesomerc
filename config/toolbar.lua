@@ -89,6 +89,36 @@ function keyboardWidget.getNextLayout(activeKeyboard, listKeyboards)
     return nextKeyboardKey
 end
 
+function keyboardWidget.getPrevLayout(activeKeyboard, listKeyboards)
+    local activeKeyboardId = nil
+    local prevKeyboardId = nil
+    local prevKeyboardKey = nil
+    if activeKeyboard ~= nil and listKeyboards ~= nil then
+        -- Get the key list
+        -- alert('activeKeyboard', 'activeKeyboard begin')
+        local keys = keyboardWidget.getKeys(listKeyboards)
+        for i, v in ipairs(keys) do
+            -- alert('ipairs', 'ipairs: '..i..'value: '..v)
+            if v == activeKeyboard then
+                -- alert('ipairs', 'activeKeyboardId: '..i..',value: '..activeKeyboard)
+                activeKeyboardId = i
+            end
+            keysLastId = i
+        end
+        -- alert('ipair', 'activeKeyboardId: '..keysLastId)
+        -- Validate if we are not on the first item
+        if keys[activeKeyboardId-1] ~= nil then
+            prevKeyboardId = activeKeyboardId-1
+        else
+            prevKeyboardId = keysLastId
+        end
+        -- Resolve id to key
+        prevKeyboardKey = keys[prevKeyboardId]
+        -- alert('ipairs', 'outputId: '..nextKeyboardId..'gvalue: '..nextKeyboardKey)
+    end
+    -- alert('getNextLayout', 'nextLayout: '..nextKeyboardKey)
+    return prevKeyboardKey
+end
 function keyboardWidget.getKeys(array)
     -- local output (array)
     local output = {}
@@ -109,9 +139,11 @@ function keyboardWidget.popupAddInfos()
     local layoutActive = keyboardWidget.getActiveKeyboard()
     local layoutList = keyboardWidget.getListKeyboard()
     local layoutNext = keyboardWidget.getNextLayout(layoutActive, layoutList)
-    local content = 'Active layout: '..layoutActive..'\n'
+    local layoutPrev = keyboardWidget.getPrevLayout(layoutActive, layoutList)
+    local content = 'Active layout :: '..layoutActive..'\n'
     -- alert('getKeys', 'layoutNext: '..layoutNext)
-    content = content .. 'Next layout: '..layoutNext..'\n'
+    content = content .. 'Next layout >> '..layoutNext..'\n'
+    content = content .. 'Prev layout << '..layoutPrev..'\n'
     -- @TODO: Add better layout
     keyboardWidget.popup = naughty.notify({
         text = string.format(
@@ -133,6 +165,11 @@ vicious.register(keyboardWidget.widget, keyboardWidget.getActiveKeyboard, "$1%",
 
 keyboardWidget.widget:connect_signal('mouse::enter', function () keyboardWidget.popupAddInfos() end)
 keyboardWidget.widget:connect_signal('mouse::leave', keyboardWidget.popupRemoveInfos)
+-- 
+-- keyboardWidget.widget:buttons(util.table.join(
+--     awful.button({ }, 1, function() show(-1) end),
+--     awful.button({ }, 3, function() show(1) end)
+-- ))
 
 -- Textclock widget {{{1
 clockicon = wibox.widget.imagebox()
