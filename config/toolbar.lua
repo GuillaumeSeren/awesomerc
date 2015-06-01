@@ -31,7 +31,9 @@ keyboardWidget={}
 
 function keyboardWidget.getListKeyboard()
     local listKeyboard = {}
-    listKeyboard['bepo'] = 'fr bepo'
+    listKeyboard['bepo']   = 'fr bepo'
+    listKeyboard['azerty'] = 'fr'
+    listKeyboard['qwerty'] = 'us'
     return listKeyboard
 end
 
@@ -58,20 +60,64 @@ function keyboardWidget.popupRemoveInfos()
     end
 end
 
+function keyboardWidget.getNextLayout(activeKeyboard, listKeyboards)
+    local activeKeyboardId = nil
+    local nextKeyboardId = nil
+    local nextKeyboardKey = nil
+    if activeKeyboard ~= nil and listKeyboards ~= nil then
+        -- Get the key list
+        -- alert('activeKeyboard', 'activeKeyboard begin')
+        local keys = keyboardWidget.getKeys(listKeyboards)
+        for i, v in ipairs(keys) do
+            -- alert('ipairs', 'ipairs: '..i..'value: '..v)
+            if v == activeKeyboard then
+                -- alert('ipairs', 'activeKeyboardId: '..i..',value: '..activeKeyboard)
+                activeKeyboardId = i
+            end
+        end
+        -- Validate if we are not on the last item
+        if keys[activeKeyboardId+1] ~= nil then
+            nextKeyboardId = activeKeyboardId+1
+        else
+            nextKeyboardId = 1
+        end
+        -- Resolve id to key
+        nextKeyboardKey = keys[nextKeyboardId]
+        -- alert('ipairs', 'outputId: '..nextKeyboardId..'gvalue: '..nextKeyboardKey)
+    end
+    -- alert('getNextLayout', 'nextLayout: '..nextKeyboardKey)
+    return nextKeyboardKey
+end
+
+function keyboardWidget.getKeys(array)
+    -- local output (array)
+    local output = {}
+    -- alert('getKeys', 'getKeys begin')
+    for k,v in pairs(array) do
+        -- alert('getKeys', 'key:'..k..',value:'..v)
+        table.insert(output, k)
+    end
+    return output
+end
+
 function keyboardWidget.popupAddInfos()
     keyboardWidget.popupRemoveInfos()
     local capi = {
         mouse = mouse,
         screen = screen
     }
-    -- @TODO: Add better content
-    local cal = 'Active layout: '..keyboardWidget.getActiveKeyboard()
+    local layoutActive = keyboardWidget.getActiveKeyboard()
+    local layoutList = keyboardWidget.getListKeyboard()
+    local layoutNext = keyboardWidget.getNextLayout(layoutActive, layoutList)
+    local content = 'Active layout: '..layoutActive..'\n'
+    -- alert('getKeys', 'layoutNext: '..layoutNext)
+    content = content .. 'Next layout: '..layoutNext..'\n'
     -- @TODO: Add better layout
     keyboardWidget.popup = naughty.notify({
         text = string.format(
             '<span font_desc="%s">%s</span>',
             "Terminus",
-            cal),
+            content),
         timeout = 0,
         position = "top_right",
         margin = 10,
