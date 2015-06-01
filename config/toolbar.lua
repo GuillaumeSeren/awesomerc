@@ -29,6 +29,8 @@ gold        = "<span color='#e7b400'>"
 -- KeyBoard Widget {{{1
 keyboardWidget={}
 
+-- Return the layout available {{{2
+-- @TODO: Let the user configure his list
 function keyboardWidget.getListKeyboard()
     local listKeyboard = {}
     listKeyboard['bepo']   = 'fr bepo'
@@ -37,6 +39,7 @@ function keyboardWidget.getListKeyboard()
     return listKeyboard
 end
 
+-- Return the active layout in the system {{{2
 function keyboardWidget.getActiveKeyboard()
     local activeKeyboardCmd = io.popen("setxkbmap -query | grep 'variant' | sed 's/^variant:[[:space:]]*\\(.*\\)/\\1/g'")
     local activeKeyboardValue = activeKeyboardCmd:read()
@@ -48,30 +51,27 @@ function keyboardWidget.getActiveKeyboard()
     return output
 end
 
-
+-- }}}
 -- Popup
 keyboardWidget.popup = nil
-
+-- Delete the tooltip {{{2
 function keyboardWidget.popupRemoveInfos()
     if keyboardWidget.popup ~= nil then
         naughty.destroy(keyboardWidget.popup)
         keyboardWidget.popup = nil
-        -- offset = 0
     end
 end
 
+-- Return the nextLayout {{{2
 function keyboardWidget.getNextLayout(activeKeyboard, listKeyboards)
     local activeKeyboardId = nil
     local nextKeyboardId = nil
     local nextKeyboardKey = nil
     if activeKeyboard ~= nil and listKeyboards ~= nil then
         -- Get the key list
-        -- alert('activeKeyboard', 'activeKeyboard begin')
         local keys = keyboardWidget.getKeys(listKeyboards)
         for i, v in ipairs(keys) do
-            -- alert('ipairs', 'ipairs: '..i..'value: '..v)
             if v == activeKeyboard then
-                -- alert('ipairs', 'activeKeyboardId: '..i..',value: '..activeKeyboard)
                 activeKeyboardId = i
             end
         end
@@ -83,29 +83,24 @@ function keyboardWidget.getNextLayout(activeKeyboard, listKeyboards)
         end
         -- Resolve id to key
         nextKeyboardKey = keys[nextKeyboardId]
-        -- alert('ipairs', 'outputId: '..nextKeyboardId..'gvalue: '..nextKeyboardKey)
     end
-    -- alert('getNextLayout', 'nextLayout: '..nextKeyboardKey)
     return nextKeyboardKey
 end
 
+-- Return the prev layout {{{2
 function keyboardWidget.getPrevLayout(activeKeyboard, listKeyboards)
     local activeKeyboardId = nil
     local prevKeyboardId = nil
     local prevKeyboardKey = nil
     if activeKeyboard ~= nil and listKeyboards ~= nil then
         -- Get the key list
-        -- alert('activeKeyboard', 'activeKeyboard begin')
         local keys = keyboardWidget.getKeys(listKeyboards)
         for i, v in ipairs(keys) do
-            -- alert('ipairs', 'ipairs: '..i..'value: '..v)
             if v == activeKeyboard then
-                -- alert('ipairs', 'activeKeyboardId: '..i..',value: '..activeKeyboard)
                 activeKeyboardId = i
             end
             keysLastId = i
         end
-        -- alert('ipair', 'activeKeyboardId: '..keysLastId)
         -- Validate if we are not on the first item
         if keys[activeKeyboardId-1] ~= nil then
             prevKeyboardId = activeKeyboardId-1
@@ -114,22 +109,21 @@ function keyboardWidget.getPrevLayout(activeKeyboard, listKeyboards)
         end
         -- Resolve id to key
         prevKeyboardKey = keys[prevKeyboardId]
-        -- alert('ipairs', 'outputId: '..nextKeyboardId..'gvalue: '..nextKeyboardKey)
     end
-    -- alert('getNextLayout', 'nextLayout: '..nextKeyboardKey)
     return prevKeyboardKey
 end
+
+-- Return the keys of a key/value array {{{2
 function keyboardWidget.getKeys(array)
     -- local output (array)
     local output = {}
-    -- alert('getKeys', 'getKeys begin')
     for k,v in pairs(array) do
-        -- alert('getKeys', 'key:'..k..',value:'..v)
         table.insert(output, k)
     end
     return output
 end
 
+-- Add the tooltip {{{2
 function keyboardWidget.popupAddInfos()
     keyboardWidget.popupRemoveInfos()
     local capi = {
@@ -141,7 +135,6 @@ function keyboardWidget.popupAddInfos()
     local layoutNext = keyboardWidget.getNextLayout(layoutActive, layoutList)
     local layoutPrev = keyboardWidget.getPrevLayout(layoutActive, layoutList)
     local content = 'Active layout :: '..layoutActive..'\n'
-    -- alert('getKeys', 'layoutNext: '..layoutNext)
     content = content .. 'Next layout >> '..layoutNext..'\n'
     content = content .. 'Prev layout << '..layoutPrev..'\n'
     -- @TODO: Add better layout
@@ -159,6 +152,7 @@ function keyboardWidget.popupAddInfos()
     })
 end
 
+-- }}}
 -- Do not launch it if missing dependencies
 keyboardWidget.widget = wibox.widget.textbox()
 vicious.register(keyboardWidget.widget, keyboardWidget.getActiveKeyboard, "$1%", 1)
