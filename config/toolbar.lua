@@ -34,8 +34,8 @@ keyboardWidget={}
 function keyboardWidget.getListKeyboard()
     local listKeyboard = {}
     listKeyboard['bepo']   = 'fr bepo'
-    listKeyboard['azerty'] = 'fr'
-    listKeyboard['qwerty'] = 'us'
+    listKeyboard['azerty'] = 'fr oss'
+    listKeyboard['qwerty'] = 'us euro'
     return listKeyboard
 end
 
@@ -123,6 +123,30 @@ function keyboardWidget.getKeys(array)
     return output
 end
 
+-- Set the next layout {{{2
+function keyboardWidget.setLayoutNext()
+    alert('setLayoutNext', 'setLayoutNext()')
+    local output = nil
+    local layoutActive = keyboardWidget.getActiveKeyboard()
+    local layoutList = keyboardWidget.getListKeyboard()
+    local layoutNext = keyboardWidget.getNextLayout(layoutActive, layoutList)
+    alert('setLayoutNext', 'Change keyboard layout to: '..layoutList[layoutNext])
+    local setXkbmapCmd = os.execute('setxkbmap '..layoutList[layoutNext])
+    local setXmodmapCmd = os.execute('xmodmap ~/.Xmodmap')
+end
+
+-- Set the prev layout {{{2
+function keyboardWidget.setLayoutPrev()
+    alert('setLayoutPrev', 'setLayoutPrev()')
+    local output = nil
+    local layoutActive = keyboardWidget.getActiveKeyboard()
+    local layoutList = keyboardWidget.getListKeyboard()
+    local layoutPrev = keyboardWidget.getPrevLayout(layoutActive, layoutList)
+    alert('setLayoutPrev', 'Change keyboard layout to: '..layoutList[layoutPrev])
+    local setXkbmapCmd = os.execute('setxkbmap '..layoutList[layoutPrev])
+    local setXmodmapCmd = os.execute('xmodmap ~/.Xmodmap')
+end
+
 -- Add the tooltip {{{2
 function keyboardWidget.popupAddInfos()
     keyboardWidget.popupRemoveInfos()
@@ -134,15 +158,17 @@ function keyboardWidget.popupAddInfos()
     local layoutList = keyboardWidget.getListKeyboard()
     local layoutNext = keyboardWidget.getNextLayout(layoutActive, layoutList)
     local layoutPrev = keyboardWidget.getPrevLayout(layoutActive, layoutList)
-    local content = 'Active layout :: '..layoutActive..'\n'
-    content = content .. 'Next layout >> '..layoutNext..'\n'
-    content = content .. 'Prev layout << '..layoutPrev..'\n'
+    local content = 'Active layout '..layoutActive..'\n'
+    content = content .. 'Next layout '..layoutNext..'\n'
+    content = content .. 'Prev layout '..layoutPrev..'\n'
+    -- setLayoutPrev()
     -- @TODO: Add better layout
     keyboardWidget.popup = naughty.notify({
         text = string.format(
             '<span font_desc="%s">%s</span>',
             "Terminus",
-            content),
+            content
+        ),
         timeout = 0,
         position = "top_right",
         margin = 10,
@@ -150,16 +176,6 @@ function keyboardWidget.popupAddInfos()
         width = 585,
         screen = capi.mouse.screen
     })
-end
-
--- setNextLayout {{{2
-function keyboardWidget.setNextLayout()
-    alert('setNextLayout', 'setNextLayout')
-end
-
--- setPrevLayout {{{2
-function keyboardWidget.setPrevLayout()
-    alert('setPrevLayout', 'setPrevLayout')
 end
 
 -- }}}
@@ -171,8 +187,8 @@ keyboardWidget.widget:connect_signal('mouse::enter', function () keyboardWidget.
 keyboardWidget.widget:connect_signal('mouse::leave', keyboardWidget.popupRemoveInfos)
 
 keyboardWidget.widget:buttons(awful.util.table.join(
-    awful.button({ }, 1, function() keyboardWidget.setNextLayout() end),
-    awful.button({ }, 3, function() keyboardWidget.setPrevLayout() end)
+    awful.button({ }, 1, function() keyboardWidget.setLayoutNext() end),
+    awful.button({ }, 3, function() keyboardWidget.setLayoutPrev() end)
 ))
 
 -- Textclock widget {{{1
