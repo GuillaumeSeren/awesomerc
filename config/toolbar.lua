@@ -59,7 +59,7 @@ function keyboardWidget.getActiveKeyboardDisplay()
     else
         output = layoutActive
     end
-    return blue .. output .. coldef
+    return blue .. '⌨ '.. output .. coldef
 end
 
 -- Return the active keyboard layout on the system {{{2
