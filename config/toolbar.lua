@@ -50,6 +50,18 @@ function keyboardWidget.getActiveKeyboard()
     return output
 end
 
+function keyboardWidget.getActiveKeyboardDisplay()
+    local output = nil
+    local layoutActive = keyboardWidget.getActiveKeyboard()
+    local layoutList = keyboardWidget.getListKeyboard()
+    if layoutList[layoutActive] ~= nil then
+        output = layoutList[layoutActive]
+    else
+        output = layoutActive
+    end
+    return output
+end
+
 -- Return the active keyboard layout on the system {{{2
 function keyboardWidget.getKeyboardLayout()
     local activeKeyboardCmd = io.popen("setxkbmap -query | grep 'layout' | sed 's/^layout:[[:space:]]*\\(.*\\)/\\1/g'")
@@ -191,9 +203,9 @@ function keyboardWidget.popupAddInfos()
     local layoutList = keyboardWidget.getListKeyboard()
     local layoutNext = keyboardWidget.getNextLayout(layoutActive, layoutList)
     local layoutPrev = keyboardWidget.getPrevLayout(layoutActive, layoutList)
-    local content = 'Active layout '..layoutActive..'\n'
-    content = content .. 'Next layout '..layoutNext..'\n'
-    content = content .. 'Prev layout '..layoutPrev..'\n'
+    local content = 'Active layout '..   layoutList[layoutActive]..'\n'
+    content = content .. 'Next layout '..layoutList[layoutNext]..'\n'
+    content = content .. 'Prev layout '..layoutList[layoutPrev]..'\n'
     -- setLayoutPrev()
     -- @TODO: Add better layout
     keyboardWidget.popup = naughty.notify({
@@ -214,7 +226,7 @@ end
 -- }}}
 -- Do not launch it if missing dependencies
 keyboardWidget.widget = wibox.widget.textbox()
-vicious.register(keyboardWidget.widget, keyboardWidget.getActiveKeyboard, "$1%", 1)
+vicious.register(keyboardWidget.widget, keyboardWidget.getActiveKeyboardDisplay, "$1%", 1)
 
 keyboardWidget.widget:connect_signal('mouse::enter', function () keyboardWidget.popupAddInfos() end)
 keyboardWidget.widget:connect_signal('mouse::leave', keyboardWidget.popupRemoveInfos)
