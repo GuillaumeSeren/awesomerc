@@ -152,6 +152,16 @@ function keyboardWidget.popupAddInfos()
     })
 end
 
+-- setNextLayout {{{2
+function keyboardWidget.setNextLayout()
+    alert('setNextLayout', 'setNextLayout')
+end
+
+-- setPrevLayout {{{2
+function keyboardWidget.setPrevLayout()
+    alert('setPrevLayout', 'setPrevLayout')
+end
+
 -- }}}
 -- Do not launch it if missing dependencies
 keyboardWidget.widget = wibox.widget.textbox()
@@ -159,11 +169,11 @@ vicious.register(keyboardWidget.widget, keyboardWidget.getActiveKeyboard, "$1%",
 
 keyboardWidget.widget:connect_signal('mouse::enter', function () keyboardWidget.popupAddInfos() end)
 keyboardWidget.widget:connect_signal('mouse::leave', keyboardWidget.popupRemoveInfos)
--- 
--- keyboardWidget.widget:buttons(util.table.join(
---     awful.button({ }, 1, function() show(-1) end),
---     awful.button({ }, 3, function() show(1) end)
--- ))
+
+keyboardWidget.widget:buttons(awful.util.table.join(
+    awful.button({ }, 1, function() keyboardWidget.setNextLayout() end),
+    awful.button({ }, 3, function() keyboardWidget.setPrevLayout() end)
+))
 
 -- Textclock widget {{{1
 clockicon = wibox.widget.imagebox()
