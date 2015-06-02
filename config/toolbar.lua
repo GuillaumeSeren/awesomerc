@@ -30,21 +30,56 @@ gold        = "<span color='#e7b400'>"
 keyboardWidget={}
 
 -- Return the layout available {{{2
--- @TODO: Let the user configure his list
 function keyboardWidget.getListKeyboard()
     local listKeyboard = {}
-    listKeyboard['bepo']   = 'fr bepo'
-    listKeyboard['azerty'] = 'fr'
-    listKeyboard['qwerty'] = 'us'
+    listKeyboard['fr bepo'] = 'bepo'
+    listKeyboard['fr oss']  = 'azerty'
+    listKeyboard['us euro'] = 'qwerty'
     return listKeyboard
 end
 
 -- Return the active layout in the system {{{2
 function keyboardWidget.getActiveKeyboard()
+    local layout = keyboardWidget.getKeyboardLayout()
+    local variant = keyboardWidget.getKeyboardVariant()
+    local output=nil
+    if layout ~= nil and variant ~= nil then
+        output = layout..' '..variant
+    end
+    return output
+end
+
+-- Return the display name, ifset for active keyboard {{{2
+function keyboardWidget.getActiveKeyboardDisplay()
+    local output = nil
+    local layoutActive = keyboardWidget.getActiveKeyboard()
+    local layoutList = keyboardWidget.getListKeyboard()
+    if layoutList[layoutActive] ~= nil then
+        output = layoutList[layoutActive]
+    else
+        output = layoutActive
+    end
+    return blue .. '⌨ '.. output .. coldef
+end
+
+-- Return the active keyboard layout on the system {{{2
+function keyboardWidget.getKeyboardLayout()
+    local activeKeyboardCmd = io.popen("setxkbmap -query | grep 'layout' | sed 's/^layout:[[:space:]]*\\(.*\\)/\\1/g'")
+    local activeKeyboardValue = activeKeyboardCmd:read()
+    activeKeyboardCmd:close()
+    local output=nil
+    if activeKeyboardValue ~= nil then
+        output = activeKeyboardValue
+    end
+    return output
+end
+
+-- Return the active keyboard variant on the system {{{2
+function keyboardWidget.getKeyboardVariant()
     local activeKeyboardCmd = io.popen("setxkbmap -query | grep 'variant' | sed 's/^variant:[[:space:]]*\\(.*\\)/\\1/g'")
     local activeKeyboardValue = activeKeyboardCmd:read()
     activeKeyboardCmd:close()
-    local output='keyboard'
+    local output=nil
     if activeKeyboardValue ~= nil then
         output = activeKeyboardValue
     end
@@ -72,6 +107,7 @@ function keyboardWidget.getNextLayout(activeKeyboard, listKeyboards)
         local keys = keyboardWidget.getKeys(listKeyboards)
         for i, v in ipairs(keys) do
             if v == activeKeyboard then
+                -- alert('getNextLayout', 'getNextLayout: '..activeKeyboard)
                 activeKeyboardId = i
             end
         end
@@ -123,6 +159,40 @@ function keyboardWidget.getKeys(array)
     return output
 end
 
+-- Return the value of a key/value array {{{2
+function keyboardWidget.getValues(array)
+    -- local output (array)
+    local output = {}
+    for k,v in pairs(array) do
+        table.insert(output, v)
+    end
+    return output
+end
+
+-- Set the next layout {{{2
+function keyboardWidget.setLayoutNext()
+    -- alert('setLayoutNext', 'setLayoutNext()')
+    local output = nil
+    local layoutActive = keyboardWidget.getActiveKeyboard()
+    local layoutList = keyboardWidget.getListKeyboard()
+    local layoutNext = keyboardWidget.getNextLayout(layoutActive, layoutList)
+    alert('setLayoutNext', 'Change keyboard layout to: '..layoutList[layoutNext])
+    local setXkbmapCmd = os.execute('setxkbmap '..layoutNext)
+    local setXmodmapCmd = os.execute('xmodmap ~/.Xmodmap')
+end
+
+-- Set the prev layout {{{2
+function keyboardWidget.setLayoutPrev()
+    -- alert('setLayoutPrev', 'setLayoutPrev()')
+    local output = nil
+    local layoutActive = keyboardWidget.getActiveKeyboard()
+    local layoutList = keyboardWidget.getListKeyboard()
+    local layoutPrev = keyboardWidget.getPrevLayout(layoutActive, layoutList)
+    alert('setLayoutPrev', 'Change keyboard layout to: '..layoutList[layoutPrev])
+    local setXkbmapCmd = os.execute('setxkbmap '..layoutPrev)
+    local setXmodmapCmd = os.execute('xmodmap ~/.Xmodmap')
+end
+
 -- Add the tooltip {{{2
 function keyboardWidget.popupAddInfos()
     keyboardWidget.popupRemoveInfos()
@@ -134,15 +204,17 @@ function keyboardWidget.popupAddInfos()
     local layoutList = keyboardWidget.getListKeyboard()
     local layoutNext = keyboardWidget.getNextLayout(layoutActive, layoutList)
     local layoutPrev = keyboardWidget.getPrevLayout(layoutActive, layoutList)
-    local content = 'Active layout :: '..layoutActive..'\n'
-    content = content .. 'Next layout >> '..layoutNext..'\n'
-    content = content .. 'Prev layout << '..layoutPrev..'\n'
+    local content = 'Active layout '..   layoutList[layoutActive]..'\n'
+    content = content .. 'Next layout '..layoutList[layoutNext]..'\n'
+    content = content .. 'Prev layout '..layoutList[layoutPrev]..'\n'
+    -- setLayoutPrev()
     -- @TODO: Add better layout
     keyboardWidget.popup = naughty.notify({
         text = string.format(
             '<span font_desc="%s">%s</span>',
             "Terminus",
-            content),
+            content
+        ),
         timeout = 0,
         position = "top_right",
         margin = 10,
@@ -155,15 +227,15 @@ end
 -- }}}
 -- Do not launch it if missing dependencies
 keyboardWidget.widget = wibox.widget.textbox()
-vicious.register(keyboardWidget.widget, keyboardWidget.getActiveKeyboard, "$1%", 1)
+vicious.register(keyboardWidget.widget, keyboardWidget.getActiveKeyboardDisplay, "$1%", 1)
 
 keyboardWidget.widget:connect_signal('mouse::enter', function () keyboardWidget.popupAddInfos() end)
 keyboardWidget.widget:connect_signal('mouse::leave', keyboardWidget.popupRemoveInfos)
--- 
--- keyboardWidget.widget:buttons(util.table.join(
---     awful.button({ }, 1, function() show(-1) end),
---     awful.button({ }, 3, function() show(1) end)
--- ))
+
+keyboardWidget.widget:buttons(awful.util.table.join(
+    awful.button({ }, 1, function() keyboardWidget.setLayoutNext() end),
+    awful.button({ }, 3, function() keyboardWidget.setLayoutPrev() end)
+))
 
 -- Textclock widget {{{1
 clockicon = wibox.widget.imagebox()
