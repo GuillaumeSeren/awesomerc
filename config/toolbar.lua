@@ -33,18 +33,41 @@ keyboardWidget={}
 -- @TODO: Let the user configure his list
 function keyboardWidget.getListKeyboard()
     local listKeyboard = {}
-    listKeyboard['bepo']   = 'fr bepo'
-    listKeyboard['azerty'] = 'fr oss'
-    listKeyboard['qwerty'] = 'us euro'
+    listKeyboard['fr bepo'] = 'bepo'
+    listKeyboard['fr oss']  = 'azerty'
+    listKeyboard['us euro'] = 'qwerty'
     return listKeyboard
 end
 
 -- Return the active layout in the system {{{2
 function keyboardWidget.getActiveKeyboard()
+    local layout = keyboardWidget.getKeyboardLayout()
+    local variant = keyboardWidget.getKeyboardVariant()
+    local output=nil
+    if layout ~= nil and variant ~= nil then
+        output = layout..' '..variant
+    end
+    return output
+end
+
+-- Return the active keyboard layout on the system {{{2
+function keyboardWidget.getKeyboardLayout()
+    local activeKeyboardCmd = io.popen("setxkbmap -query | grep 'layout' | sed 's/^layout:[[:space:]]*\\(.*\\)/\\1/g'")
+    local activeKeyboardValue = activeKeyboardCmd:read()
+    activeKeyboardCmd:close()
+    local output=nil
+    if activeKeyboardValue ~= nil then
+        output = activeKeyboardValue
+    end
+    return output
+end
+
+-- Return the active keyboard variant on the system {{{2
+function keyboardWidget.getKeyboardVariant()
     local activeKeyboardCmd = io.popen("setxkbmap -query | grep 'variant' | sed 's/^variant:[[:space:]]*\\(.*\\)/\\1/g'")
     local activeKeyboardValue = activeKeyboardCmd:read()
     activeKeyboardCmd:close()
-    local output='keyboard'
+    local output=nil
     if activeKeyboardValue ~= nil then
         output = activeKeyboardValue
     end
@@ -72,6 +95,7 @@ function keyboardWidget.getNextLayout(activeKeyboard, listKeyboards)
         local keys = keyboardWidget.getKeys(listKeyboards)
         for i, v in ipairs(keys) do
             if v == activeKeyboard then
+                alert('getNextLayout', 'getNextLayout: '..activeKeyboard)
                 activeKeyboardId = i
             end
         end
@@ -123,6 +147,15 @@ function keyboardWidget.getKeys(array)
     return output
 end
 
+-- Return the value of a key/value array {{{2
+function keyboardWidget.getValues(array)
+    -- local output (array)
+    local output = {}
+    for k,v in pairs(array) do
+        table.insert(output, v)
+    end
+    return output
+end
 -- Set the next layout {{{2
 function keyboardWidget.setLayoutNext()
     alert('setLayoutNext', 'setLayoutNext()')
@@ -131,7 +164,7 @@ function keyboardWidget.setLayoutNext()
     local layoutList = keyboardWidget.getListKeyboard()
     local layoutNext = keyboardWidget.getNextLayout(layoutActive, layoutList)
     alert('setLayoutNext', 'Change keyboard layout to: '..layoutList[layoutNext])
-    local setXkbmapCmd = os.execute('setxkbmap '..layoutList[layoutNext])
+    local setXkbmapCmd = os.execute('setxkbmap '..layoutNext)
     local setXmodmapCmd = os.execute('xmodmap ~/.Xmodmap')
 end
 
@@ -143,7 +176,7 @@ function keyboardWidget.setLayoutPrev()
     local layoutList = keyboardWidget.getListKeyboard()
     local layoutPrev = keyboardWidget.getPrevLayout(layoutActive, layoutList)
     alert('setLayoutPrev', 'Change keyboard layout to: '..layoutList[layoutPrev])
-    local setXkbmapCmd = os.execute('setxkbmap '..layoutList[layoutPrev])
+    local setXkbmapCmd = os.execute('setxkbmap '..layoutPrev)
     local setXmodmapCmd = os.execute('xmodmap ~/.Xmodmap')
 end
 
