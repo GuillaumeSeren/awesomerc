@@ -30,7 +30,6 @@ gold        = "<span color='#e7b400'>"
 keyboardWidget={}
 
 -- Return the layout available {{{2
--- @TODO: Let the user configure his list
 function keyboardWidget.getListKeyboard()
     local listKeyboard = {}
     listKeyboard['fr bepo'] = 'bepo'
@@ -50,6 +49,7 @@ function keyboardWidget.getActiveKeyboard()
     return output
 end
 
+-- Return the display name, ifset for active keyboard {{{2
 function keyboardWidget.getActiveKeyboardDisplay()
     local output = nil
     local layoutActive = keyboardWidget.getActiveKeyboard()
@@ -59,7 +59,7 @@ function keyboardWidget.getActiveKeyboardDisplay()
     else
         output = layoutActive
     end
-    return output
+    return blue .. output .. coldef
 end
 
 -- Return the active keyboard layout on the system {{{2
@@ -107,7 +107,7 @@ function keyboardWidget.getNextLayout(activeKeyboard, listKeyboards)
         local keys = keyboardWidget.getKeys(listKeyboards)
         for i, v in ipairs(keys) do
             if v == activeKeyboard then
-                alert('getNextLayout', 'getNextLayout: '..activeKeyboard)
+                -- alert('getNextLayout', 'getNextLayout: '..activeKeyboard)
                 activeKeyboardId = i
             end
         end
@@ -168,9 +168,10 @@ function keyboardWidget.getValues(array)
     end
     return output
 end
+
 -- Set the next layout {{{2
 function keyboardWidget.setLayoutNext()
-    alert('setLayoutNext', 'setLayoutNext()')
+    -- alert('setLayoutNext', 'setLayoutNext()')
     local output = nil
     local layoutActive = keyboardWidget.getActiveKeyboard()
     local layoutList = keyboardWidget.getListKeyboard()
@@ -182,7 +183,7 @@ end
 
 -- Set the prev layout {{{2
 function keyboardWidget.setLayoutPrev()
-    alert('setLayoutPrev', 'setLayoutPrev()')
+    -- alert('setLayoutPrev', 'setLayoutPrev()')
     local output = nil
     local layoutActive = keyboardWidget.getActiveKeyboard()
     local layoutList = keyboardWidget.getListKeyboard()
