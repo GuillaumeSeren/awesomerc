@@ -917,12 +917,12 @@ if rfkillWidgetLib.getRfkillWidgetValid() ~= nil then
         local rfkillWidget = require("bundle.awesome-rfkill")
         -- Here the rfkillWidget is not reachable
         local widget = rfkillWidget.getRfkillBlockedState()
-        return red .. widget ..coldef
+        return widget
     end
-    
+
     rfkillWidget = wibox.widget.textbox()
     vicious.register(rfkillWidget, getRfkillWidget, "$1%", 1)
-    
+
     -- Mouse event listener
     rfkillWidget:connect_signal('mouse::enter', function () rfkillTooltipAdd() end)
     rfkillWidget:connect_signal('mouse::leave', function () rfkillTooltipRemove() end)
