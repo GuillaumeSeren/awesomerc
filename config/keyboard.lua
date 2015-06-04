@@ -126,8 +126,9 @@ globalkeys = awful.util.table.join(
 
     -- Lock session {{{2
     awful.key({}, "XF86ScreenSaver", function ()
-            awful.util.spawn("i3lock -e -f -c 000000 --dpms")
-        end),
+        alert('lock system', 'Lock the system.')
+        awful.util.spawn("bash /home/gseren/src/free/github/guillaumeseren/i3lock-wrapper/i3lock_wrapper.sh")
+    end),
     -- Dropdown terminal {{{2
     awful.key({ modkey,	          }, "z",
         function () scratch.drop(terminal)
