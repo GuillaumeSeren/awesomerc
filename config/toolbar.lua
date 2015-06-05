@@ -1124,6 +1124,7 @@ for s = 1, screen.count() do
     end
     -- Brightness can be hided if this setup is not laptop
     if getBrightnessWidgetValid() ~= nil then
+        alert('brightnessWidgetValid', 'BrightnessWidget is started')
         right_layout:add(spacer)
         right_layout:add(brightnessWidget)
     end
