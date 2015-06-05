@@ -502,16 +502,22 @@ end
 
 -- Brightness widget {{{1
 function getScreenBrightness()
+    local output = ""
+    if getBrightnessWidgetValid() ~= nil  then
+        output = "💡 "..getBrightnessWidgetValid().." %"
+    end
+    return orange .. output .. coldef
+end
+
+function getBrightnessWidgetValid()
     local screenBrightnessCmd = io.popen("xbacklight | cut -d'.' -f1")
     local screenBrightnessValue = screenBrightnessCmd:read()
     screenBrightnessCmd:close()
-    local output = ""
-    if (tonumber(screenBrightnessValue) ~= nil and tonumber(screenBrightnessValue) > 0) then
-        output = "S "..screenBrightnessValue.."%"
-    else
-        output = "S 0"
+    local output = nil
+    if (tonumber(screenBrightnessValue) ~= nil and tonumber(screenBrightnessValue) >= 0) then
+        output = screenBrightnessValue
     end
-    return orange .. output .. coldef
+    return output
 end
 
 brightnessWidget = wibox.widget.textbox()
@@ -1116,6 +1122,11 @@ for s = 1, screen.count() do
             right_layout:add(batwidget)
         end
     end
+    -- Brightness can be hided if this setup is not laptop
+    if getBrightnessWidgetValid() ~= nil then
+        right_layout:add(spacer)
+        right_layout:add(brightnessWidget)
+    end
     if getRedshiftWidgetValid() ~= nil then
         alert('redshiftWidgetValid', 'RedshiftWidget is started')
         -- Redshift can be disabled if not present
@@ -1123,8 +1134,6 @@ for s = 1, screen.count() do
         right_layout:add(redshiftWidget)
     end
     -- Brightness can be hided if this setup is not laptop
-    right_layout:add(spacer)
-    right_layout:add(brightnessWidget)
     right_layout:add(spacer)
     right_layout:add(volicon)
     right_layout:add(volumewidget)
