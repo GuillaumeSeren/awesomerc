@@ -1066,8 +1066,6 @@ for s = 1, screen.count() do
     local right_layout = wibox.layout.fixed.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
     local rfkillWidgetLib = require("bundle.awesome-rfkill")
-    right_layout:add(spacer)
-    right_layout:add(keyboardWidget.widget)
     if rfkillWidgetLib.getRfkillWidgetValid() ~= nil then
         alert('rfkillWidgetValid', 'RfkillWidget is started')
         -- Rfkill is not required on desktop
@@ -1082,42 +1080,27 @@ for s = 1, screen.count() do
     right_layout:add(spacer)
     right_layout:add(netupicon)
     right_layout:add(netupinfo)
-    right_layout:add(spacer)
-    right_layout:add(pomodoroicon)
-    right_layout:add(pomodoro.widget)
     -- Mail can be hided if no mail on this system
     if getMailWidgetValid() ~= nil then
         alert('mailWidgetValid', 'MailWidget is started')
         right_layout:add(spacer)
         right_layout:add(mailWidget)
     end
-    -- Brightness can be hided if this setup is not laptop
-    right_layout:add(spacer)
-    right_layout:add(brightnessWidget)
-    if getRedshiftWidgetValid() ~= nil then
-        alert('redshiftWidgetValid', 'RedshiftWidget is started')
-        -- Redshift can be disabled if not present
-        right_layout:add(spacer)
-        right_layout:add(redshiftWidget)
-    end
     -- Always
-    right_layout:add(spacer)
-    right_layout:add(memicon)
-    right_layout:add(memwidget)
-    right_layout:add(spacer)
-    right_layout:add(cpuWidgetGraph)
-    right_layout:add(spacer)
-    right_layout:add(cpuicon)
-    right_layout:add(cpuwidget)
     right_layout:add(spacer)
     right_layout:add(fshicon)
     right_layout:add(fshwidget)
     right_layout:add(spacer)
+    right_layout:add(memicon)
+    right_layout:add(memwidget)
+    right_layout:add(spacer)
+    right_layout:add(cpuicon)
+    right_layout:add(cpuwidget)
+    right_layout:add(spacer)
+    right_layout:add(cpuWidgetGraph)
+    right_layout:add(spacer)
     right_layout:add(tempicon)
     right_layout:add(tempwidget)
-    right_layout:add(spacer)
-    right_layout:add(volicon)
-    right_layout:add(volumewidget)
     -- BatWidget can be hided if no bat in the system
     if getBatWidgetValid() ~= nil then
         alert('batWidgetValid', 'BatWidget is started')
@@ -1133,6 +1116,23 @@ for s = 1, screen.count() do
             right_layout:add(batwidget)
         end
     end
+    if getRedshiftWidgetValid() ~= nil then
+        alert('redshiftWidgetValid', 'RedshiftWidget is started')
+        -- Redshift can be disabled if not present
+        right_layout:add(spacer)
+        right_layout:add(redshiftWidget)
+    end
+    -- Brightness can be hided if this setup is not laptop
+    right_layout:add(spacer)
+    right_layout:add(brightnessWidget)
+    right_layout:add(spacer)
+    right_layout:add(volicon)
+    right_layout:add(volumewidget)
+    right_layout:add(spacer)
+    right_layout:add(keyboardWidget.widget)
+    right_layout:add(spacer)
+    right_layout:add(pomodoroicon)
+    right_layout:add(pomodoro.widget)
     -- Always
     right_layout:add(clockicon)
     right_layout:add(mytextclock)
