@@ -948,7 +948,7 @@ function getPomodoroIcon()
     else
         icon = " ☕ "
     end
-    return orange .. icon .. pomodoroWorkNumber .."/" .. coldef
+    return orange ..'⏰'.. icon .. pomodoroWorkNumber .."/" .. coldef
 end
 
 pomodoroicon = wibox.widget.textbox()
