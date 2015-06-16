@@ -520,7 +520,6 @@ function getBrightnessWidgetValid()
     return output
 end
 
-
 brightnessWidget = wibox.widget.textbox()
 vicious.register(brightnessWidget, getScreenBrightness, "$1%", 1)
 
@@ -917,22 +916,22 @@ netupicon.align = "middle"
 netupinfo = wibox.widget.textbox()
 vicious.register(netupinfo, vicious.widgets.net, netInterfaceActiveDecoratedUp(netupinfo, args), 1)
 
-rfkillWidgetLib = require("bundle.awesome-rfkill")
-if rfkillWidgetLib.getRfkillWidgetValid() ~= nil then
+rfkillWidget = require("bundle.awesome-rfkill")
+if rfkillWidget.getRfkillWidgetValid() ~= nil then
     -- RfKill widget {{{1
     function getRfkillWidget(widget, args)
         local rfkillWidget = require("bundle.awesome-rfkill")
         -- Here the rfkillWidget is not reachable
-        local widget = rfkillWidget.getRfkillBlockedState()
+        local widget = rfkillWidget.getRfkillBlockedStateDisplay()
         return widget
     end
 
-    rfkillWidget = wibox.widget.textbox()
-    vicious.register(rfkillWidget, getRfkillWidget, "$1%", 1)
+    rfkillWidget.widget = wibox.widget.textbox()
+    vicious.register(rfkillWidget.widget, getRfkillWidget, "$1%", 1)
 
     -- Mouse event listener
-    rfkillWidget:connect_signal('mouse::enter', function () rfkillTooltipAdd() end)
-    rfkillWidget:connect_signal('mouse::leave', function () rfkillTooltipRemove() end)
+    rfkillWidget.widget:connect_signal('mouse::enter', function () rfkillWidget.rfkillTooltipAdd() end)
+    rfkillWidget.widget:connect_signal('mouse::leave', rfkillWidget.rfkillTooltipRemove)
 end
 
 -- Memory widget {{{1
@@ -955,7 +954,14 @@ function getPomodoroIcon()
     else
         icon = " ☕ "
     end
-    return orange ..'⏰'.. icon .. pomodoroWorkNumber .."/" .. coldef
+    local xresources = awful.util.pread("xrdb -query")
+    local pomodoroNumber = xresources:match('awesome.Pomodoro.npomodoros:%s+%d+')
+    if pomodoroNumber then
+        pomodoroNumber = tonumber(pomodoroNumber:match('%d+'))
+    else
+        pomodoroNumber = '-'
+    end
+    return orange .. icon .. pomodoroNumber .."/" .. coldef
 end
 
 pomodoroicon = wibox.widget.textbox()
@@ -1072,12 +1078,12 @@ for s = 1, screen.count() do
     -- Widgets that are aligned to the upper right {{{1
     local right_layout = wibox.layout.fixed.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
-    local rfkillWidgetLib = require("bundle.awesome-rfkill")
-    if rfkillWidgetLib.getRfkillWidgetValid() ~= nil then
+    local rfkillWidget = require("bundle.awesome-rfkill")
+    if rfkillWidget.getRfkillWidgetValid() ~= nil then
         alert('rfkillWidgetValid', 'RfkillWidget is started')
         -- Rfkill is not required on desktop
         right_layout:add(spacer)
-        right_layout:add(rfkillWidget)
+        right_layout:add(rfkillWidget.widget)
     end
     -- Always
     right_layout:add(spacer)
