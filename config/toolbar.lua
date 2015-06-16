@@ -1129,15 +1129,18 @@ for s = 1, screen.count() do
             right_layout:add(batwidget)
         end
     end
+    -- Brightness can be hided if this setup is not laptop
+    if getBrightnessWidgetValid() ~= nil then
+        alert('brightnessWidgetValid', 'BrightnessWidget is started')
+        right_layout:add(spacer)
+        right_layout:add(brightnessWidget)
+    end
     if getRedshiftWidgetValid() ~= nil then
         alert('redshiftWidgetValid', 'RedshiftWidget is started')
         -- Redshift can be disabled if not present
         right_layout:add(spacer)
         right_layout:add(redshiftWidget)
     end
-    -- Brightness can be hided if this setup is not laptop
-    right_layout:add(spacer)
-    right_layout:add(brightnessWidget)
     right_layout:add(spacer)
     right_layout:add(volicon)
     right_layout:add(volumewidget)
