@@ -502,17 +502,24 @@ end
 
 -- Brightness widget {{{1
 function getScreenBrightness()
-    local screenBrightnessCmd = io.popen("xbacklight | cut -d'.' -f1")
-    local screenBrightnessValue = screenBrightnessCmd:read()
-    screenBrightnessCmd:close()
     local output = ""
-    if (tonumber(screenBrightnessValue) ~= nil and tonumber(screenBrightnessValue) > 0) then
-        output = "S "..screenBrightnessValue.."%"
-    else
-        output = "S 0"
+    if getBrightnessWidgetValid() ~= nil  then
+        output = "💡 "..getBrightnessWidgetValid().." %"
     end
     return orange .. output .. coldef
 end
+
+function getBrightnessWidgetValid()
+    local screenBrightnessCmd = io.popen("xbacklight | cut -d'.' -f1")
+    local screenBrightnessValue = screenBrightnessCmd:read()
+    screenBrightnessCmd:close()
+    local output = nil
+    if (tonumber(screenBrightnessValue) ~= nil and tonumber(screenBrightnessValue) >= 0) then
+        output = screenBrightnessValue
+    end
+    return output
+end
+
 
 brightnessWidget = wibox.widget.textbox()
 vicious.register(brightnessWidget, getScreenBrightness, "$1%", 1)
