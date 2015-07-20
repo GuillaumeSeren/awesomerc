@@ -45,20 +45,28 @@ function keyboardWidget.getActiveKeyboard()
     local output=nil
     if layout ~= nil and variant ~= nil then
         output = layout..' '..variant
+    elseif layout ~= nil then
+        -- We got at least a layout hopefully
+        output = layout
     end
     return output
 end
 
 -- Return the display name, ifset for active keyboard {{{2
 function keyboardWidget.getActiveKeyboardDisplay()
-    local output = nil
+    local output = ''
     local layoutActive = keyboardWidget.getActiveKeyboard()
     local layoutList = keyboardWidget.getListKeyboard()
     if layoutList[layoutActive] ~= nil then
         output = layoutList[layoutActive]
+        -- alert('keyboardWidget', 'keyboardWidget: '..layoutActive)
+        -- alert('keyboardWidget', 'keyboardWidget: NOT NULL')
     else
         output = layoutActive
+        -- alert('keyboardWidget', 'keyboardWidget: '..layoutActive)
+        -- alert('keyboardWidget', 'keyboardWidget: IS NULL')
     end
+    -- alert('keyboardWidget', 'keyboardWidget::: '..layoutActive)
     return blue .. '⌨ '.. output .. coldef
 end
 
@@ -543,7 +551,9 @@ function getRedshiftStatus()
     redshiftStatusCmd:close()
     local symbol = getRedshiftPeriod()
     local output = ""
+    if redshifStatusValue ~= nil then
         output = symbol .. " "..redshiftStatusValue
+    end
     return red .. output .. coldef
 end
 
