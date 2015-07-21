@@ -19,6 +19,9 @@ awful.rules.rules = {
         border_color = beautiful.border_normal,
         focus = true,
         keys = clientkeys,
+        -- add the following two:
+        maximized_vertical   = false,
+        maximized_horizontal = false,
         buttons = clientbuttons,
         size_hints_honor = false
         -- Désactive la possibilité de maximisation
@@ -35,15 +38,17 @@ awful.rules.rules = {
     { rule = { instance = "plugin-container" }, properties = {
         floating = true } },
     -- @FIXME: screenkey is not floating.
-    { rule = { instance = "screenkey" }, properties = {
+    { rule = { instance = "Screenkey" }, properties = {
         floating = true } },
     { rule = { class = "pinentry" }, properties = {
         floating = true } },
     -- Tag 1 «sys» {{{1
     -- Taq 2 «www» {{{1
     --Set Iceweasel on is tag : tag 2 of screen 1
-    { rule = { class = "Iceweasel" }, properties = {
-        tag = tags[1][2] } },
+    -- 21/07/2015: The class name is now Navigator Iceweasel
+    { rule = { class = "Navigator" }, properties = {
+        tag = tags[1][2],
+        floating = true} },
     -- Tag 3 «mail» {{{1
     --Set Icedove on is tag : tag 2 of screen 1
     { rule = { class = "Icedove" }, properties = {
