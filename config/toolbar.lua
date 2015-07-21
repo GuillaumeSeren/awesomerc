@@ -32,9 +32,10 @@ keyboardWidget={}
 -- Return the layout available {{{2
 function keyboardWidget.getListKeyboard()
     local listKeyboard = {}
-    listKeyboard['fr bepo'] = 'bepo'
-    listKeyboard['fr oss']  = 'azerty'
-    listKeyboard['us euro'] = 'qwerty'
+    listKeyboard['fr bepo']   = 'bepo'
+    listKeyboard['fr dvorak'] = 'dvorak-fr'
+    listKeyboard['fr oss']    = 'azerty'
+    listKeyboard['us euro']   = 'qwerty'
     return listKeyboard
 end
 
@@ -45,20 +46,28 @@ function keyboardWidget.getActiveKeyboard()
     local output=nil
     if layout ~= nil and variant ~= nil then
         output = layout..' '..variant
+    elseif layout ~= nil then
+        -- We got at least a layout hopefully
+        output = layout
     end
     return output
 end
 
 -- Return the display name, ifset for active keyboard {{{2
 function keyboardWidget.getActiveKeyboardDisplay()
-    local output = nil
+    local output = ''
     local layoutActive = keyboardWidget.getActiveKeyboard()
     local layoutList = keyboardWidget.getListKeyboard()
     if layoutList[layoutActive] ~= nil then
         output = layoutList[layoutActive]
+        -- alert('keyboardWidget', 'keyboardWidget: '..layoutActive)
+        -- alert('keyboardWidget', 'keyboardWidget: NOT NULL')
     else
         output = layoutActive
+        -- alert('keyboardWidget', 'keyboardWidget: '..layoutActive)
+        -- alert('keyboardWidget', 'keyboardWidget: IS NULL')
     end
+    -- alert('keyboardWidget', 'keyboardWidget::: '..layoutActive)
     return blue .. '⌨ '.. output .. coldef
 end
 
@@ -89,8 +98,10 @@ end
 -- }}}
 -- Popup
 keyboardWidget.popup = nil
+
 -- Delete the tooltip {{{2
 function keyboardWidget.popupRemoveInfos()
+    -- alert('popupRemoveInfos', 'Remove tooltip')
     if keyboardWidget.popup ~= nil then
         naughty.destroy(keyboardWidget.popup)
         keyboardWidget.popup = nil
@@ -112,13 +123,19 @@ function keyboardWidget.getNextLayout(activeKeyboard, listKeyboards)
             end
         end
         -- Validate if we are not on the last item
-        if keys[activeKeyboardId+1] ~= nil then
+        -- FIXME: IF the key is not here it will be an error,
+        if (activeKeyboardId ~= nil and keys[activeKeyboardId+1] ~= nil) then
             nextKeyboardId = activeKeyboardId+1
         else
             nextKeyboardId = 1
         end
         -- Resolve id to key
         nextKeyboardKey = keys[nextKeyboardId]
+    -- elseif  activeKeyboard == nil and listKeyboards ~= nil then
+    --     -- In this case the user may have change the layout hi
+    --     -- we just return the first entry of the li
+    --     local keys = keyboardWidget.getKeys(listKeyboards)
+    --     nextKeyboardKey = key[1]
     end
     return nextKeyboardKey
 end
@@ -138,7 +155,7 @@ function keyboardWidget.getPrevLayout(activeKeyboard, listKeyboards)
             keysLastId = i
         end
         -- Validate if we are not on the first item
-        if keys[activeKeyboardId-1] ~= nil then
+        if (activeKeyboardId ~= nil and keys[activeKeyboardId-1] ~= nil) then
             prevKeyboardId = activeKeyboardId-1
         else
             prevKeyboardId = keysLastId
@@ -169,7 +186,7 @@ function keyboardWidget.getValues(array)
     return output
 end
 
--- Set the next layout {{{2
+-- setLayoutNext() Set the next layout {{{2
 function keyboardWidget.setLayoutNext()
     -- alert('setLayoutNext', 'setLayoutNext()')
     local output = nil
@@ -195,17 +212,28 @@ end
 
 -- Add the tooltip {{{2
 function keyboardWidget.popupAddInfos()
+    -- alert('addInfos()', 'Add keyboard infos')
     keyboardWidget.popupRemoveInfos()
     local capi = {
         mouse = mouse,
         screen = screen
     }
-    local layoutActive = keyboardWidget.getActiveKeyboard()
     local layoutList = keyboardWidget.getListKeyboard()
+    local layoutActive = keyboardWidget.getActiveKeyboard()
+    -- Check if we already know active layout
+    if layoutList[layoutActive] ~= nil then
+        layoutActive = layoutList[layoutActive]
+    else
+        -- We do not know this la
+        -- Advert the us
+        alert('popupAddInfos()', 'Keyboard: New layout detected('..layoutActive..')')
+    end
     local layoutNext = keyboardWidget.getNextLayout(layoutActive, layoutList)
     local layoutPrev = keyboardWidget.getPrevLayout(layoutActive, layoutList)
-    local content = 'Active layout '..   layoutList[layoutActive]..'\n'
+    -- local content = 'Active layout '..   layoutList[layoutActive]..'\n'
+    local content = 'Active layout '..   layoutActive..'\n'
     content = content .. 'Next layout '..layoutList[layoutNext]..'\n'
+    -- content = content .. 'Next layout '..layoutNext..'\n'
     content = content .. 'Prev layout '..layoutList[layoutPrev]..'\n'
     -- setLayoutPrev()
     -- @TODO: Add better layout
@@ -233,6 +261,7 @@ keyboardWidget.widget:connect_signal('mouse::enter', function () keyboardWidget.
 keyboardWidget.widget:connect_signal('mouse::leave', keyboardWidget.popupRemoveInfos)
 
 keyboardWidget.widget:buttons(awful.util.table.join(
+    --@FIXME: There is a bug in the order of Next / Layout.
     awful.button({ }, 1, function() keyboardWidget.setLayoutNext() end),
     awful.button({ }, 3, function() keyboardWidget.setLayoutPrev() end)
 ))
@@ -543,7 +572,9 @@ function getRedshiftStatus()
     redshiftStatusCmd:close()
     local symbol = getRedshiftPeriod()
     local output = ""
+    if redshifStatusValue ~= nil then
         output = symbol .. " "..redshiftStatusValue
+    end
     return red .. output .. coldef
 end
 
