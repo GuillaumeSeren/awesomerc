@@ -32,9 +32,10 @@ keyboardWidget={}
 -- Return the layout available {{{2
 function keyboardWidget.getListKeyboard()
     local listKeyboard = {}
-    listKeyboard['fr bepo'] = 'bepo'
-    listKeyboard['fr oss']  = 'azerty'
-    listKeyboard['us euro'] = 'qwerty'
+    listKeyboard['fr bepo']   = 'bepo'
+    listKeyboard['fr dvorak'] = 'dvorak-fr'
+    listKeyboard['fr oss']    = 'azerty'
+    listKeyboard['us euro']   = 'qwerty'
     return listKeyboard
 end
 
@@ -100,7 +101,7 @@ keyboardWidget.popup = nil
 
 -- Delete the tooltip {{{2
 function keyboardWidget.popupRemoveInfos()
-    alert('popupRemoveInfos', 'Remove tooltip')
+    -- alert('popupRemoveInfos', 'Remove tooltip')
     if keyboardWidget.popup ~= nil then
         naughty.destroy(keyboardWidget.popup)
         keyboardWidget.popup = nil
@@ -117,7 +118,7 @@ function keyboardWidget.getNextLayout(activeKeyboard, listKeyboards)
         local keys = keyboardWidget.getKeys(listKeyboards)
         for i, v in ipairs(keys) do
             if v == activeKeyboard then
-                alert('getNextLayout', 'getNextLayout: '..activeKeyboard)
+                -- alert('getNextLayout', 'getNextLayout: '..activeKeyboard)
                 activeKeyboardId = i
             end
         end
@@ -185,7 +186,7 @@ function keyboardWidget.getValues(array)
     return output
 end
 
--- Set the next layout {{{2
+-- setLayoutNext() Set the next layout {{{2
 function keyboardWidget.setLayoutNext()
     -- alert('setLayoutNext', 'setLayoutNext()')
     local output = nil
@@ -260,6 +261,7 @@ keyboardWidget.widget:connect_signal('mouse::enter', function () keyboardWidget.
 keyboardWidget.widget:connect_signal('mouse::leave', keyboardWidget.popupRemoveInfos)
 
 keyboardWidget.widget:buttons(awful.util.table.join(
+    --@FIXME: There is a bug in the order of Next / Layout.
     awful.button({ }, 1, function() keyboardWidget.setLayoutNext() end),
     awful.button({ }, 3, function() keyboardWidget.setLayoutPrev() end)
 ))
