@@ -97,8 +97,10 @@ end
 -- }}}
 -- Popup
 keyboardWidget.popup = nil
+
 -- Delete the tooltip {{{2
 function keyboardWidget.popupRemoveInfos()
+    alert('popupRemoveInfos', 'Remove tooltip')
     if keyboardWidget.popup ~= nil then
         naughty.destroy(keyboardWidget.popup)
         keyboardWidget.popup = nil
@@ -115,18 +117,24 @@ function keyboardWidget.getNextLayout(activeKeyboard, listKeyboards)
         local keys = keyboardWidget.getKeys(listKeyboards)
         for i, v in ipairs(keys) do
             if v == activeKeyboard then
-                -- alert('getNextLayout', 'getNextLayout: '..activeKeyboard)
+                alert('getNextLayout', 'getNextLayout: '..activeKeyboard)
                 activeKeyboardId = i
             end
         end
         -- Validate if we are not on the last item
-        if keys[activeKeyboardId+1] ~= nil then
+        -- FIXME: IF the key is not here it will be an error,
+        if (activeKeyboardId ~= nil and keys[activeKeyboardId+1] ~= nil) then
             nextKeyboardId = activeKeyboardId+1
         else
             nextKeyboardId = 1
         end
         -- Resolve id to key
         nextKeyboardKey = keys[nextKeyboardId]
+    -- elseif  activeKeyboard == nil and listKeyboards ~= nil then
+    --     -- In this case the user may have change the layout hi
+    --     -- we just return the first entry of the li
+    --     local keys = keyboardWidget.getKeys(listKeyboards)
+    --     nextKeyboardKey = key[1]
     end
     return nextKeyboardKey
 end
@@ -146,7 +154,7 @@ function keyboardWidget.getPrevLayout(activeKeyboard, listKeyboards)
             keysLastId = i
         end
         -- Validate if we are not on the first item
-        if keys[activeKeyboardId-1] ~= nil then
+        if (activeKeyboardId ~= nil and keys[activeKeyboardId-1] ~= nil) then
             prevKeyboardId = activeKeyboardId-1
         else
             prevKeyboardId = keysLastId
@@ -203,17 +211,28 @@ end
 
 -- Add the tooltip {{{2
 function keyboardWidget.popupAddInfos()
+    -- alert('addInfos()', 'Add keyboard infos')
     keyboardWidget.popupRemoveInfos()
     local capi = {
         mouse = mouse,
         screen = screen
     }
-    local layoutActive = keyboardWidget.getActiveKeyboard()
     local layoutList = keyboardWidget.getListKeyboard()
+    local layoutActive = keyboardWidget.getActiveKeyboard()
+    -- Check if we already know active layout
+    if layoutList[layoutActive] ~= nil then
+        layoutActive = layoutList[layoutActive]
+    else
+        -- We do not know this la
+        -- Advert the us
+        alert('popupAddInfos()', 'Keyboard: New layout detected('..layoutActive..')')
+    end
     local layoutNext = keyboardWidget.getNextLayout(layoutActive, layoutList)
     local layoutPrev = keyboardWidget.getPrevLayout(layoutActive, layoutList)
-    local content = 'Active layout '..   layoutList[layoutActive]..'\n'
+    -- local content = 'Active layout '..   layoutList[layoutActive]..'\n'
+    local content = 'Active layout '..   layoutActive..'\n'
     content = content .. 'Next layout '..layoutList[layoutNext]..'\n'
+    -- content = content .. 'Next layout '..layoutNext..'\n'
     content = content .. 'Prev layout '..layoutList[layoutPrev]..'\n'
     -- setLayoutPrev()
     -- @TODO: Add better layout
