@@ -48,3 +48,7 @@ end
 -- AutoStart commands {{{1
 -- RedShift:
 run_once("redshift", "nice -n19 redshift -l 48.856614:2.3522219000000177 -t 5700:3500")
+-- Cache le curseur après 1 sec d'idle et ne le réactive qu'après un mouvement
+-- d'au moins 20px
+-- http://doc.ubuntu-fr.org/unclutter
+run_once("unclutter", "unclutter -idle 1 -jitter 20")
