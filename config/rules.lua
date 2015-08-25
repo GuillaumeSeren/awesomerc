@@ -53,6 +53,13 @@ awful.rules.rules = {
     --Set Icedove on is tag : tag 2 of screen 1
     { rule = { class = "Icedove" }, properties = {
         tag = tags[1][3] } },
+    { rule = { class = "vlc" }, properties = {
+        tag = tags[1][4],
+        floating = true } },
+    { rule = { class = "mpv" }, properties = {
+        tag = tags[1][4]
+    --     floating = true 
+    } },
     -- MAIL
     { rule = { class = "URxvt", name = "Sup 0.21.0 :: Inbox" }, properties = {
         tag = tags[1][3] } },
