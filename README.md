@@ -25,21 +25,24 @@ I add a function to detect if the prerequisites are here and if not,
 disable (not add in the toolbar) the given widget.
 
 Here the list of available modules:
-* RfkillWidget:     Display the state of the rfkill switch.
-* NetWidget:        Display the network status, auto switch on active interface.
-* PomodoroWidget:   Display a Pomodoro timer and count done run this session.
-* MailWidget:       Display the INBOX unread messages by using notmuch.
-* ScreenWidget:     Display the brightness of the screen.
-* RedshiftWidget:   Display the redshift setup actually.
-* MemWidget:        Display the memory usage.
-* CpuGraph:         Display the CPU graph usage.
-* CpuWidget:        Display the load of the CPU.
-* FsWidget:         Display the space usage in the system.
-* TempWidget:       Display temp information.
-* SoundWidget:      Display the sound level (PulseAudio support).
-* BatWidget:        Display the information of available bat of the system.
-* DateWidget:       Display the date.
-* TimeWidget:       Display the current time.
+
+Name             | Description
+-----------------|------------
+`RfkillWidget`   | Display the state of the rfkill switch.
+`NetWidget`      | Display the network status, auto switch on active interface.
+`PomodoroWidget` | Display a Pomodoro timer and count done run this session.
+`MailWidget`     | Display the INBOX unread messages by using notmuch.
+`ScreenWidget`   | Display the brightness of the screen.
+`RedshiftWidget` | Display the redshift setup actually.
+`MemWidget`      | Display the memory usage.
+`CpuGraph`       | Display the CPU graph usage.
+`CpuWidget`      | Display the load of the CPU.
+`FsWidget`       | Display the space usage in the system.
+`TempWidget`     | Display temp information.
+`SoundWidget`    | Display the sound level (PulseAudio support).
+`BatWidget`      | Display the information of available bat of the system.
+`DateWidget`     | Display the date.
+`TimeWidget`     | Display the current time.
 
 ## Install
 Install is simple :
