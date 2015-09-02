@@ -49,6 +49,8 @@ awful.rules.rules = {
     { rule = { class = "Navigator" }, properties = {
         tag = tags[1][2],
         floating = true} },
+    { rule = { class = "Iceweasel" }, properties = {
+        tag = tags[1][2]} },
     -- Tag 3 «mail» {{{1
     --Set Icedove on is tag : tag 2 of screen 1
     { rule = { class = "Icedove" }, properties = {
@@ -58,7 +60,7 @@ awful.rules.rules = {
         floating = true } },
     { rule = { class = "mpv" }, properties = {
         tag = tags[1][4]
-    --     floating = true 
+    --     floating = true
     } },
     -- MAIL
     { rule = { class = "URxvt", name = "Sup 0.21.0 :: Inbox" }, properties = {
@@ -101,6 +103,7 @@ awful.rules.rules = {
     { rule = { class = "Inkscape" }, properties = {
         floating = true,
         tag = tags[1][8] } },
+
     -- Tag 9 «dev» {{{1
     --Set Chromium on is tag : tag 9 of screen 1
     { rule = { class = "Chromium" }, properties = {
