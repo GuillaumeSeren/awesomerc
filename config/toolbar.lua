@@ -269,7 +269,7 @@ keyboardWidget.widget:buttons(awful.util.table.join(
 -- Textclock widget {{{1
 clockicon = wibox.widget.imagebox()
 clockicon:set_image(beautiful.widget_clock)
-mytextclock = awful.widget.textclock(blue .. "%A %d %B " .. coldef .. orange .. "%H:%M ".. coldef)
+mytextclock = awful.widget.textclock(blue .. "%Y/%m/%d " .. coldef .. orange .. "%H:%M ".. coldef)
 
 -- Calendar attached to the textclock {{{1
 local os = os
@@ -554,15 +554,17 @@ vicious.register(brightnessWidget, getScreenBrightness, "$1%", 1)
 
 -- Redshift widget {{{1
 function getRedshiftPeriod()
-    local redshiftPeriodCmd = io.popen("redshift -p | grep -i 'Période' | cut -d ':' -f2")
+    local redshiftPeriodCmd = io.popen("redshift -p | grep -i 'Period' | cut -d ':' -f2")
     local redshiftPeriodValue = redshiftPeriodCmd:read()
     redshiftPeriodCmd:close()
     local output = ""
-    if redshiftPeriodValue == " Jour" then
+    -- alert('redshiftWidgetValid', 'RedshiftWidget period : '..redshiftPeriodValue)
+    if redshiftPeriodValue == " Daytime" then
         output = "☼"
     else
         output = "☾"
     end
+    -- alert('redshiftWidgetValid', 'RedshiftWidget output : '..output)
     return output
 end
 
@@ -570,10 +572,12 @@ function getRedshiftStatus()
     local redshiftStatusCmd = io.popen("redshift -p | grep -i 'Température' | cut -d ':' -f2 | sed 's/\\ //g'")
     local redshiftStatusValue = redshiftStatusCmd:read()
     redshiftStatusCmd:close()
+    -- alert('redshiftWidget', 'RedshiftWidget status : '..redshiftStatusValue)
     local symbol = getRedshiftPeriod()
     local output = ""
-    if redshifStatusValue ~= nil then
+    if (redshifStatusValue ~= nil or redshiftStatusValue ~= "") then
         output = symbol .. " "..redshiftStatusValue
+        -- alert('redshiftWidgetValid', 'RedshiftWidget '..redshifStatusValue)
     end
     return red .. output .. coldef
 end
@@ -582,6 +586,7 @@ end
 function getRedshiftWidgetValid()
     -- We need notmuch command
     local output = nil
+    -- alert('redshiftWidgetValid', 'RedshiftWidget testing')
     local redshiftStatusCmd = os.execute("redshift -p")
     if redshiftStatusCmd ~= 0 then
         output = nil
