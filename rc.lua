@@ -9,6 +9,11 @@
 -- ---------------------------------------------
 
 -- Task-List {{{1
+-- @TODO: Add lazy refresh on modules ideally callbacks events.
+-- @TODO: Do not use SUDO because it spam the journal (rfkill).
+-- @TODO: Change template use a more simple (custom) and on-the-fly tweakable.
+-- @TODO: Try powerline display for the bar.
+-- @TODO: Export basic lua to a lib
 -- @TODO: Toolbar, Add keyboard layout.
 -- @TODO: Add better overall design maybe try powerline.
 -- @TODO: Auto update netWidget, try to detect the active interface.
