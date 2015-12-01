@@ -539,7 +539,7 @@ end
 function getScreenBrightness()
     local output = ""
     if getBrightnessWidgetValid() ~= nil  then
-        output = "💡 "..getBrightnessWidgetValid().." %"
+        output = "✹ "..getBrightnessWidgetValid().." %"
     end
     return orange .. output .. coldef
 end
@@ -575,7 +575,7 @@ function getRedshiftPeriod()
 end
 
 function getRedshiftStatus()
-    local redshiftStatusCmd = io.popen("redshift -p | grep -i 'Température' | cut -d ':' -f2 | sed 's/\\ //g'")
+    local redshiftStatusCmd = io.popen("redshift -p | grep -i 'temperature' | cut -d ':' -f2 | sed 's/\\ //g'")
     local redshiftStatusValue = redshiftStatusCmd:read()
     redshiftStatusCmd:close()
     -- alert('redshiftWidget', 'RedshiftWidget status : '..redshiftStatusValue)
