@@ -914,7 +914,7 @@ function netInterfaceActiveDecorated()
     if (interface == "" or interface == nil) then
         interface = "???"
     end
-    local output = green .. interface .. coldef
+    local output = green .. '☎ '..interface .. coldef
     return output
 end
 
