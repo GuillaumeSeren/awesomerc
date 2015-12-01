@@ -614,7 +614,7 @@ tempicon:buttons(awful.util.table.join(
 awful.button({ }, 1, function () awful.util.spawn(terminal .. " -e sudo powertop ", false) end)
 ))
 tempwidget = wibox.widget.textbox()
-vicious.register(tempwidget, vicious.widgets.thermal, "<span color=\"#f1af5f\">$1°C</span>", 9, "thermal_zone0")
+vicious.register(tempwidget, vicious.widgets.thermal, "<span color=\"#f1af5f\">$1°C</span>", 1, "thermal_zone0")
 
 -- Battery 1 widget {{{1
 
