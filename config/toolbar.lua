@@ -269,7 +269,7 @@ keyboardWidget.widget:buttons(awful.util.table.join(
 -- Textclock widget {{{1
 clockicon = wibox.widget.imagebox()
 clockicon:set_image(beautiful.widget_clock)
-mytextclock = awful.widget.textclock(blue .. "%Y/%m/%d " .. coldef .. orange .. "%H:%M ".. coldef)
+mytextclock = awful.widget.textclock(blue .. "%Y/%m/%d %a " .. coldef .. orange .. "%H:%M ".. coldef)
 
 -- Calendar attached to the textclock {{{1
 local os = os
@@ -390,14 +390,20 @@ fshicon:set_image(beautiful.widget_fs)
 fshwidget = wibox.widget.textbox()
 vicious.register(fshwidget, vicious.widgets.fs,
     function (widget, args)
+        -- Get the actual value:
+        if args["{/home used_p}"] ~= nil then
+            fsWidgetValue = args["{/home used_p}"]
+        else
+            fsWidgetValue = '--'
+        end
         -- OK zone
-        if args["{/home used_p}"] >= 0 and args["{/home used_p}"] < 85 then
-            return azure .. args["{/home used_p}"] .. "%" .. coldef
+        if fsWidgetValue >= 0 and fsWidgetValue < 85 then
+            return azure .. fsWidgetValue .. "%" .. coldef
         -- Alert zone
-        elseif args["{/home used_p}"] >= 75 and args["{/home used_p}"] <= 85 then
-            return orange .. args["{/home used_p}"] .. "%" .. coldef
+        elseif fsWidgetValue >= 75 and fsWidgetValue <= 85 then
+            return orange .. fsWidgetValue .. "%" .. coldef
         -- Warning zone
-        elseif args["{/home used_p}"] >= 85 and args["{/home used_p}"] <= 100 then
+        elseif fsWidgetValue >= 85 and fsWidgetValue <= 100 then
             naughty.notify({
                 title = "Warning",
                 text = "Partition /home is nearly full\nDo some cleaning.",
@@ -406,10 +412,10 @@ vicious.register(fshwidget, vicious.widgets.fs,
                 fg = beautiful.fg_urgent,
                 bg = beautiful.bg_urgent
             })
-            return red .. args["{/home used_p}"] .. "%" .. coldef
+            return red .. fsWidgetValue .. "%" .. coldef
         -- Default case
         else
-            return azure .. args["{/home used_p}"] .. "%" .. coldef
+            return azure .. fsWidgetValue .. "%" .. coldef
         end
     end,
 620)
@@ -533,7 +539,7 @@ end
 function getScreenBrightness()
     local output = ""
     if getBrightnessWidgetValid() ~= nil  then
-        output = "💡 "..getBrightnessWidgetValid().." %"
+        output = "✹ "..getBrightnessWidgetValid().." %"
     end
     return orange .. output .. coldef
 end
@@ -569,7 +575,7 @@ function getRedshiftPeriod()
 end
 
 function getRedshiftStatus()
-    local redshiftStatusCmd = io.popen("redshift -p | grep -i 'Température' | cut -d ':' -f2 | sed 's/\\ //g'")
+    local redshiftStatusCmd = io.popen("redshift -p | grep -i 'temperature' | cut -d ':' -f2 | sed 's/\\ //g'")
     local redshiftStatusValue = redshiftStatusCmd:read()
     redshiftStatusCmd:close()
     -- alert('redshiftWidget', 'RedshiftWidget status : '..redshiftStatusValue)
@@ -608,7 +614,7 @@ tempicon:buttons(awful.util.table.join(
 awful.button({ }, 1, function () awful.util.spawn(terminal .. " -e sudo powertop ", false) end)
 ))
 tempwidget = wibox.widget.textbox()
-vicious.register(tempwidget, vicious.widgets.thermal, "<span color=\"#f1af5f\">$1°C</span>", 9, "thermal_zone0")
+vicious.register(tempwidget, vicious.widgets.thermal, "<span color=\"#f1af5f\">$1°C</span>", 1, "thermal_zone0")
 
 -- Battery 1 widget {{{1
 
@@ -908,7 +914,7 @@ function netInterfaceActiveDecorated()
     if (interface == "" or interface == nil) then
         interface = "???"
     end
-    local output = green .. interface .. coldef
+    local output = green .. '☎ '..interface .. coldef
     return output
 end
 
