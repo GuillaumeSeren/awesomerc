@@ -18,12 +18,13 @@ ACTIVE_THEME     = BUNDLE_FOLDER .. "/awesome-copycats/themes/multicolor"
 os.setlocale(os.getenv("LANG"))
 
 -- base {{{1
-terminal   = "urxvtcd"
+-- terminal   = "urxvtcd"
+terminal   = "urxvt"
 editor     = os.getenv("EDITOR") or "vim"
 editor_cmd = terminal .. " -e " .. editor
 gui_editor = "gvim"
-browser    = "iceweasel"
-mail       = terminal .. " -e sup "
+browser    = "firefox"
+mail       = terminal .. " -e alot "
 chat       = terminal .. " -e weechat "
 tasks      = terminal .. " -e htop "
 
