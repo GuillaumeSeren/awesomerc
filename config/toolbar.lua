@@ -390,14 +390,20 @@ fshicon:set_image(beautiful.widget_fs)
 fshwidget = wibox.widget.textbox()
 vicious.register(fshwidget, vicious.widgets.fs,
     function (widget, args)
+        -- Get the actual value:
+        if args["{/home used_p}"] ~= nil then
+            fsWidgetValue = args["{/home used_p}"]
+        else
+            fsWidgetValue = '--'
+        end
         -- OK zone
-        if args["{/home used_p}"] >= 0 and args["{/home used_p}"] < 85 then
-            return azure .. args["{/home used_p}"] .. "%" .. coldef
+        if fsWidgetValue >= 0 and fsWidgetValue < 85 then
+            return azure .. fsWidgetValue .. "%" .. coldef
         -- Alert zone
-        elseif args["{/home used_p}"] >= 75 and args["{/home used_p}"] <= 85 then
-            return orange .. args["{/home used_p}"] .. "%" .. coldef
+        elseif fsWidgetValue >= 75 and fsWidgetValue <= 85 then
+            return orange .. fsWidgetValue .. "%" .. coldef
         -- Warning zone
-        elseif args["{/home used_p}"] >= 85 and args["{/home used_p}"] <= 100 then
+        elseif fsWidgetValue >= 85 and fsWidgetValue <= 100 then
             naughty.notify({
                 title = "Warning",
                 text = "Partition /home is nearly full\nDo some cleaning.",
@@ -406,10 +412,10 @@ vicious.register(fshwidget, vicious.widgets.fs,
                 fg = beautiful.fg_urgent,
                 bg = beautiful.bg_urgent
             })
-            return red .. args["{/home used_p}"] .. "%" .. coldef
+            return red .. fsWidgetValue .. "%" .. coldef
         -- Default case
         else
-            return azure .. args["{/home used_p}"] .. "%" .. coldef
+            return azure .. fsWidgetValue .. "%" .. coldef
         end
     end,
 620)
