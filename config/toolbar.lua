@@ -269,7 +269,7 @@ keyboardWidget.widget:buttons(awful.util.table.join(
 -- Textclock widget {{{1
 clockicon = wibox.widget.imagebox()
 clockicon:set_image(beautiful.widget_clock)
-mytextclock = awful.widget.textclock(blue .. "%Y/%m/%d " .. coldef .. orange .. "%H:%M ".. coldef)
+mytextclock = awful.widget.textclock(blue .. "%Y/%m/%d %a " .. coldef .. orange .. "%H:%M ".. coldef)
 
 -- Calendar attached to the textclock {{{1
 local os = os
